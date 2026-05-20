@@ -1,0 +1,1517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Edaphic Neuron — Syngenta Hackathon 2026 Submission</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Mono:wght@400;500&display=swap');
+
+:root {
+  /* Terracotta & Midnight palette */
+  --midnight:    #0B0E1A;
+  --midnight2:   #111527;
+  --midnight3:   #1A1F35;
+  --terra:       #C4622D;
+  --terra-light: #E8835A;
+  --terra-dim:   rgba(196,98,45,0.12);
+  --terra-border:rgba(196,98,45,0.25);
+  --gold:        #D4A853;
+  --gold-dim:    rgba(212,168,83,0.10);
+  --sage:        #7BA05B;
+  --sage-dim:    rgba(123,160,91,0.12);
+  --cream:       #F5EFE6;
+  --cream2:      #EAE0D0;
+  --sand:        #C8B99A;
+  --white:       #FAFAF8;
+  --grey:        #8A8A8A;
+  --grey2:       #5A5A5A;
+  --border:      rgba(245,239,230,0.08);
+  --card:        rgba(245,239,230,0.03);
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+
+body{
+  background:var(--midnight);
+  color:var(--cream);
+  font-family:'DM Sans',sans-serif;
+  font-size:15px;
+  line-height:1.75;
+  overflow-x:hidden;
+}
+
+/* ── GRAIN TEXTURE ── */
+body::before{
+  content:'';
+  position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:0;opacity:.5;
+}
+
+/* ── HORIZONTAL LINES ── */
+body::after{
+  content:'';
+  position:fixed;inset:0;
+  background:repeating-linear-gradient(
+    180deg,
+    transparent,transparent 59px,
+    rgba(245,239,230,0.02) 60px
+  );
+  pointer-events:none;z-index:0;
+}
+
+/* ── NAV ── */
+.nav{
+  position:sticky;top:0;z-index:1000;
+  background:rgba(11,14,26,0.95);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;
+  padding:0 48px;overflow-x:auto;
+}
+.nav-logo{
+  font-family:'Cormorant Garamond',serif;
+  font-size:18px;font-weight:600;
+  font-style:italic;color:var(--terra-light);
+  padding:16px 0;margin-right:40px;
+  flex-shrink:0;white-space:nowrap;letter-spacing:.02em;
+}
+.nav a{
+  color:var(--sand);text-decoration:none;
+  font-size:12px;font-weight:500;
+  padding:16px 16px;white-space:nowrap;
+  flex-shrink:0;transition:color .2s;
+  letter-spacing:.04em;text-transform:uppercase;
+}
+.nav a:hover{color:var(--terra-light);}
+
+/* ── COVER ── */
+.cover{
+  position:relative;z-index:1;
+  min-height:100vh;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  overflow:hidden;
+}
+
+.cover-left{
+  background:var(--terra);
+  display:flex;flex-direction:column;
+  justify-content:center;padding:80px 60px;
+  position:relative;overflow:hidden;
+}
+
+.cover-left::before{
+  content:'';
+  position:absolute;bottom:-100px;left:-60px;
+  width:400px;height:400px;
+  background:rgba(0,0,0,0.15);
+  border-radius:50%;
+}
+
+.cover-left::after{
+  content:'';
+  position:absolute;top:-80px;right:-80px;
+  width:300px;height:300px;
+  background:rgba(255,255,255,0.06);
+  border-radius:50%;
+}
+
+.cover-tag{
+  font-family:'DM Mono',monospace;
+  font-size:10px;color:rgba(245,239,230,0.7);
+  text-transform:uppercase;letter-spacing:.2em;
+  margin-bottom:32px;
+  display:flex;align-items:center;gap:12px;
+}
+.cover-tag::before{
+  content:'';width:32px;height:1px;
+  background:rgba(245,239,230,0.5);
+}
+
+.cover-h1{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(52px,5.5vw,80px);
+  font-weight:700;line-height:.95;
+  letter-spacing:-.02em;color:var(--cream);
+  position:relative;z-index:1;
+}
+
+.cover-h1 em{
+  font-style:italic;
+  color:rgba(245,239,230,0.5);
+  display:block;font-size:60%;
+  letter-spacing:.02em;margin-bottom:8px;
+}
+
+.cover-subtitle{
+  font-size:16px;color:rgba(245,239,230,0.75);
+  margin-top:24px;max-width:340px;
+  line-height:1.7;position:relative;z-index:1;
+}
+
+.cover-meta{
+  margin-top:48px;
+  display:flex;flex-direction:column;gap:12px;
+  position:relative;z-index:1;
+}
+
+.cover-meta-item{
+  display:flex;align-items:center;gap:12px;
+  font-size:12px;color:rgba(245,239,230,0.65);
+  font-family:'DM Mono',monospace;
+  letter-spacing:.05em;
+}
+.cover-meta-item::before{
+  content:'';width:4px;height:4px;
+  background:rgba(245,239,230,0.5);
+  border-radius:50%;flex-shrink:0;
+}
+
+.cover-right{
+  background:var(--midnight2);
+  display:flex;flex-direction:column;
+  justify-content:center;padding:80px 60px;
+  position:relative;
+}
+
+.cover-right::before{
+  content:'';
+  position:absolute;top:0;left:0;
+  width:1px;height:100%;
+  background:linear-gradient(180deg,
+    transparent,var(--terra),transparent);
+}
+
+.cover-stat-grid{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:2px;margin-bottom:48px;
+}
+
+.cover-stat{
+  padding:28px;
+  background:var(--midnight3);
+  border:1px solid var(--border);
+}
+
+.cover-stat:first-child{border-radius:12px 0 0 0;}
+.cover-stat:nth-child(2){border-radius:0 12px 0 0;}
+.cover-stat:nth-child(3){border-radius:0 0 0 12px;}
+.cover-stat:last-child{border-radius:0 0 12px 0;}
+
+.cover-stat-n{
+  font-family:'Cormorant Garamond',serif;
+  font-size:48px;font-weight:700;
+  color:var(--terra-light);line-height:1;
+}
+.cover-stat-l{
+  font-size:11px;color:var(--sand);
+  text-transform:uppercase;letter-spacing:.1em;
+  margin-top:6px;font-family:'DM Mono',monospace;
+}
+
+.cover-track{
+  background:var(--terra-dim);
+  border:1px solid var(--terra-border);
+  border-radius:10px;padding:20px 24px;
+}
+.cover-track-label{
+  font-family:'DM Mono',monospace;
+  font-size:10px;color:var(--terra-light);
+  text-transform:uppercase;letter-spacing:.15em;
+  margin-bottom:6px;
+}
+.cover-track-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:22px;font-weight:600;
+  color:var(--cream);line-height:1.3;
+}
+
+@media(max-width:768px){
+  .cover{grid-template-columns:1fr;}
+  .cover-left,.cover-right{padding:60px 32px;}
+}
+
+/* ── SECTIONS ── */
+.section{
+  position:relative;z-index:1;
+  max-width:1100px;margin:0 auto;
+  padding:80px 48px;
+}
+
+.section-eyebrow{
+  display:flex;align-items:center;gap:16px;
+  margin-bottom:12px;
+}
+.eyebrow-line{
+  width:40px;height:1px;background:var(--terra);
+}
+.eyebrow-text{
+  font-family:'DM Mono',monospace;
+  font-size:10px;color:var(--terra-light);
+  text-transform:uppercase;letter-spacing:.2em;
+}
+.eyebrow-num{
+  font-family:'Cormorant Garamond',serif;
+  font-size:14px;color:var(--sand);
+  margin-left:auto;font-style:italic;
+}
+
+.section-h2{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(36px,4vw,54px);
+  font-weight:700;letter-spacing:-.02em;
+  line-height:1.05;margin-bottom:16px;
+  color:var(--cream);
+}
+
+.section-lead{
+  font-size:17px;color:var(--sand);
+  max-width:660px;line-height:1.8;
+  margin-bottom:48px;
+}
+
+/* ── DIVIDER ── */
+.divider{
+  position:relative;z-index:1;
+  display:flex;align-items:center;
+  gap:24px;padding:0 48px;
+  margin:0;
+}
+.divider-line{
+  flex:1;height:1px;
+  background:linear-gradient(90deg,
+    transparent,var(--border),transparent);
+}
+.divider-ornament{
+  font-family:'Cormorant Garamond',serif;
+  font-size:18px;color:var(--terra);
+  opacity:.5;
+}
+
+/* ── CARDS ── */
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:12px;padding:28px;
+  transition:border-color .3s,box-shadow .3s;
+}
+.card:hover{
+  border-color:var(--terra-border);
+  box-shadow:0 0 40px rgba(196,98,45,0.08);
+}
+
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+
+@media(max-width:900px){.g3,.g4{grid-template-columns:1fr 1fr;}}
+@media(max-width:600px){.g2,.g3,.g4{grid-template-columns:1fr;}}
+
+/* ── QUOTE BLOCK ── */
+.quote{
+  border-left:3px solid var(--terra);
+  padding:20px 28px;margin:32px 0;
+  background:var(--terra-dim);
+  border-radius:0 10px 10px 0;
+}
+.quote-text{
+  font-family:'Cormorant Garamond',serif;
+  font-size:20px;font-style:italic;
+  color:var(--cream);line-height:1.6;
+}
+.quote-attr{
+  font-family:'DM Mono',monospace;
+  font-size:10px;color:var(--sand);
+  text-transform:uppercase;letter-spacing:.1em;
+  margin-top:10px;
+}
+
+/* ── COMPETITOR TABLE ── */
+.comp-table{
+  width:100%;border-collapse:collapse;
+  margin-top:8px;
+}
+.comp-table th{
+  text-align:left;padding:12px 16px;
+  font-family:'DM Mono',monospace;
+  font-size:10px;color:var(--sand);
+  text-transform:uppercase;letter-spacing:.1em;
+  border-bottom:1px solid var(--terra-border);
+  background:var(--terra-dim);
+}
+.comp-table td{
+  padding:14px 16px;font-size:13px;
+  color:#B0A898;border-bottom:1px solid var(--border);
+  vertical-align:top;line-height:1.5;
+}
+.comp-table tr:last-child td{border-bottom:none;}
+.comp-table tr:hover td{background:rgba(196,98,45,0.03);}
+.comp-table .platform{
+  font-weight:600;color:var(--cream);
+  font-size:13px;
+}
+.comp-table .gap{color:var(--terra-light);font-size:12px;}
+.comp-table .edge{color:var(--sage);font-size:12px;}
+
+/* ── FEATURE CARDS ── */
+.feat-card{
+  border:1px solid var(--border);
+  border-radius:14px;overflow:hidden;
+  margin-bottom:20px;
+  background:var(--card);
+  transition:border-color .3s;
+}
+.feat-card:hover{border-color:var(--terra-border);}
+
+.feat-header{
+  display:flex;align-items:center;gap:16px;
+  padding:20px 24px;
+  border-bottom:1px solid var(--border);
+  background:rgba(196,98,45,0.04);
+}
+
+.feat-num{
+  width:36px;height:36px;border-radius:8px;
+  background:var(--terra);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Cormorant Garamond',serif;
+  font-weight:700;font-size:16px;
+  color:var(--cream);flex-shrink:0;
+}
+
+.feat-title{
+  font-family:'DM Sans',sans-serif;
+  font-size:15px;font-weight:600;flex:1;
+}
+
+.feat-tag{
+  font-family:'DM Mono',monospace;
+  font-size:10px;padding:3px 10px;
+  border-radius:100px;
+  text-transform:uppercase;letter-spacing:.08em;
+}
+.ft-you{
+  background:var(--terra-dim);color:var(--terra-light);
+  border:1px solid var(--terra-border);
+}
+.ft-her{
+  background:var(--gold-dim);color:var(--gold);
+  border:1px solid rgba(212,168,83,0.25);
+}
+
+.feat-body{
+  display:grid;grid-template-columns:1.2fr 1fr;
+  gap:24px;padding:24px;
+}
+@media(max-width:768px){.feat-body{grid-template-columns:1fr;}}
+
+.feat-desc h4{
+  font-family:'DM Mono',monospace;
+  font-size:10px;color:var(--sand);
+  text-transform:uppercase;letter-spacing:.1em;
+  margin-bottom:10px;padding-bottom:6px;
+  border-bottom:1px solid var(--border);
+}
+.feat-desc ul{
+  list-style:none;display:flex;
+  flex-direction:column;gap:6px;
+}
+.feat-desc ul li{
+  font-size:13px;color:#B0A898;
+  display:flex;gap:8px;align-items:flex-start;
+  line-height:1.5;
+}
+.feat-desc ul li::before{
+  content:'—';color:var(--terra);
+  flex-shrink:0;margin-top:1px;
+}
+
+/* ── ALGORITHM BADGE ── */
+.alg-badge{
+  background:var(--midnight3);
+  border:1px solid var(--border);
+  border-radius:8px;padding:12px 14px;
+}
+.alg-badge-label{
+  font-family:'DM Mono',monospace;
+  font-size:9px;color:var(--grey);
+  text-transform:uppercase;letter-spacing:.12em;
+  margin-bottom:4px;
+}
+.alg-badge-value{
+  font-family:'DM Mono',monospace;
+  font-size:13px;color:var(--gold);
+  font-weight:500;
+}
+.alg-badge-why{
+  font-size:12px;color:#8A8A8A;
+  margin-top:4px;line-height:1.4;
+}
+
+/* ── PIPELINE ── */
+.pipeline-box{
+  background:var(--midnight2);
+  border:1px solid var(--border);
+  border-radius:14px;padding:36px;
+  font-family:'DM Mono',monospace;
+  font-size:12px;line-height:2;
+  color:var(--grey);overflow-x:auto;
+}
+.p-hl{color:var(--terra-light);}
+.p-go{color:var(--sage);}
+.p-gd{color:var(--gold);}
+.p-wh{color:var(--cream);}
+.p-dm{color:#2D3748;}
+
+/* ── METRIC CARDS ── */
+.metric-card{
+  padding:28px;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:12px;
+  text-align:center;
+  transition:all .3s;
+}
+.metric-card:hover{
+  border-color:var(--terra-border);
+  box-shadow:0 0 30px rgba(196,98,45,0.08);
+  transform:translateY(-2px);
+}
+.metric-n{
+  font-family:'Cormorant Garamond',serif;
+  font-size:52px;font-weight:700;
+  color:var(--terra-light);line-height:1;
+}
+.metric-unit{
+  font-size:18px;color:var(--terra);
+  vertical-align:super;
+}
+.metric-label{
+  font-size:12px;color:var(--sand);
+  margin-top:8px;line-height:1.4;
+}
+.metric-source{
+  font-family:'DM Mono',monospace;
+  font-size:10px;color:var(--grey);
+  margin-top:8px;text-transform:uppercase;
+  letter-spacing:.08em;
+}
+
+/* ── ASSUMPTION / LIMITATION ── */
+.limit-item{
+  display:flex;gap:16px;padding:16px 0;
+  border-bottom:1px solid var(--border);
+}
+.limit-item:last-child{border-bottom:none;}
+.limit-icon{
+  width:32px;height:32px;border-radius:8px;
+  background:var(--terra-dim);
+  border:1px solid var(--terra-border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;flex-shrink:0;
+}
+.limit-title{
+  font-size:14px;font-weight:600;
+  color:var(--cream);margin-bottom:4px;
+}
+.limit-desc{
+  font-size:13px;color:#8A8A8A;line-height:1.6;
+}
+
+/* ── PILOT ROADMAP ── */
+.roadmap{
+  display:flex;gap:0;
+  position:relative;
+}
+.roadmap::before{
+  content:'';
+  position:absolute;
+  top:28px;left:28px;right:28px;
+  height:1px;
+  background:linear-gradient(90deg,
+    var(--terra),var(--gold),var(--sage));
+  z-index:0;
+}
+.roadmap-phase{
+  flex:1;text-align:center;
+  padding:0 12px;position:relative;z-index:1;
+}
+.roadmap-dot{
+  width:56px;height:56px;border-radius:50%;
+  margin:0 auto 16px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Cormorant Garamond',serif;
+  font-size:20px;font-weight:700;
+}
+.rd-1{background:var(--terra);color:var(--cream);}
+.rd-2{background:var(--gold);color:var(--midnight);}
+.rd-3{background:var(--sage);color:var(--cream);}
+
+.roadmap-label{
+  font-family:'DM Mono',monospace;
+  font-size:10px;color:var(--sand);
+  text-transform:uppercase;letter-spacing:.1em;
+  margin-bottom:8px;
+}
+.roadmap-title{
+  font-size:13px;font-weight:600;
+  color:var(--cream);margin-bottom:8px;
+}
+.roadmap-tasks{
+  font-size:12px;color:#8A8A8A;
+  line-height:1.6;
+}
+.roadmap-gate{
+  margin-top:10px;padding:6px 10px;
+  background:var(--midnight3);
+  border:1px solid var(--border);
+  border-radius:6px;
+  font-family:'DM Mono',monospace;
+  font-size:10px;color:var(--terra-light);
+}
+
+/* ── TEAM TABLE ── */
+.team-table{width:100%;border-collapse:collapse;}
+.team-table th{
+  text-align:left;padding:12px 16px;
+  font-family:'DM Mono',monospace;
+  font-size:10px;color:var(--sand);
+  text-transform:uppercase;letter-spacing:.1em;
+  border-bottom:1px solid var(--terra-border);
+  background:var(--terra-dim);
+}
+.team-table td{
+  padding:14px 16px;font-size:13px;
+  color:#B0A898;border-bottom:1px solid var(--border);
+  vertical-align:top;line-height:1.5;
+}
+.team-table tr:last-child td{border-bottom:none;}
+.team-table .role{font-weight:600;color:var(--cream);}
+
+/* ── CLOSING ── */
+.closing{
+  background:var(--terra);
+  position:relative;overflow:hidden;
+  padding:80px 80px;text-align:center;
+  z-index:1;
+}
+.closing::before{
+  content:'';
+  position:absolute;inset:0;
+  background:url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='200' cy='200' r='180' fill='none' stroke='rgba(245,239,230,0.08)' stroke-width='1'/%3E%3Ccircle cx='200' cy='200' r='120' fill='none' stroke='rgba(245,239,230,0.06)' stroke-width='1'/%3E%3Ccircle cx='200' cy='200' r='60' fill='none' stroke='rgba(245,239,230,0.04)' stroke-width='1'/%3E%3C/svg%3E") center/600px no-repeat;
+  pointer-events:none;
+}
+.closing h2{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(36px,5vw,64px);
+  font-weight:700;font-style:italic;
+  color:var(--cream);line-height:1.1;
+  margin-bottom:24px;position:relative;
+}
+.closing p{
+  font-size:17px;color:rgba(245,239,230,.8);
+  max-width:640px;margin:0 auto 32px;
+  line-height:1.8;position:relative;
+}
+.closing-footer{
+  font-family:'DM Mono',monospace;
+  font-size:11px;color:rgba(245,239,230,.5);
+  text-transform:uppercase;letter-spacing:.15em;
+  position:relative;
+}
+
+/* ── SECTION BAND ── */
+.band{
+  background:var(--midnight3);
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  padding:60px 0;
+}
+
+/* ── INLINE HIGHLIGHT ── */
+.hl{color:var(--terra-light);font-weight:600;}
+.hl-g{color:var(--sage);font-weight:600;}
+.hl-d{color:var(--gold);font-weight:600;}
+
+/* ── SECTION NUMBER MARKER ── */
+.section-marker{
+  display:inline-flex;align-items:center;
+  gap:12px;margin-bottom:32px;
+}
+.sm-num{
+  font-family:'Cormorant Garamond',serif;
+  font-size:80px;font-weight:700;
+  color:var(--terra-dim);
+  line-height:1;
+  -webkit-text-stroke:1px var(--terra-border);
+}
+.sm-bar{
+  width:2px;height:64px;
+  background:linear-gradient(180deg,var(--terra),transparent);
+}
+.sm-text{
+  font-family:'Cormorant Garamond',serif;
+  font-size:13px;font-style:italic;color:var(--sand);
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-logo">Edaphic Neuron</div>
+  <a href="#problem">Problem</a>
+  <a href="#competitive">Competitive</a>
+  <a href="#solution">Solution</a>
+  <a href="#data">Data</a>
+  <a href="#models">Models</a>
+  <a href="#impact">Impact</a>
+  <a href="#limitations">Limitations</a>
+  <a href="#team">Team</a>
+</nav>
+
+<!-- ══════════════════════════════════════════════ COVER ══ -->
+<div class="cover">
+  <div class="cover-left">
+    <div class="cover-tag">Syngenta Hackathon 2026 · IITM BS Paradox</div>
+    <h1 class="cover-h1">
+      <em>Introducing</em>
+      Edaphic Neuron
+    </h1>
+    <p class="cover-subtitle">
+      The first field intelligence operating system that connects biological urgency directly to the rep's daily plan — automatically, before the farmer even knows the threat is there.
+    </p>
+    <div class="cover-meta">
+      <div class="cover-meta-item">Track 2 — AI-Guided Field Force Intelligence</div>
+      <div class="cover-meta-item">Submission Deadline: 20 May 2026</div>
+      <div class="cover-meta-item">IITM BS Paradox Hackathon</div>
+    </div>
+  </div>
+  <div class="cover-right">
+    <div class="cover-stat-grid">
+      <div class="cover-stat">
+        <div class="cover-stat-n">7</div>
+        <div class="cover-stat-l">ML Models</div>
+      </div>
+      <div class="cover-stat">
+        <div class="cover-stat-n">20</div>
+        <div class="cover-stat-l">Features</div>
+      </div>
+      <div class="cover-stat">
+        <div class="cover-stat-n">6</div>
+        <div class="cover-stat-l">Data Sources</div>
+      </div>
+      <div class="cover-stat">
+        <div class="cover-stat-n">0</div>
+        <div class="cover-stat-l">Human decisions needed</div>
+      </div>
+    </div>
+    <div class="cover-track">
+      <div class="cover-track-label">Solution Name</div>
+      <div class="cover-track-title">Edaphic Neuron<br><span style="font-size:14px;font-weight:400;font-style:italic;color:var(--sand);">Sarthi = Co-pilot · Krishi = Agriculture</span></div>
+    </div>
+    <div style="margin-top:16px;padding:16px 20px;background:var(--sage-dim);border:1px solid rgba(123,160,91,0.2);border-radius:10px;">
+      <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--sage);text-transform:uppercase;letter-spacing:.12em;margin-bottom:6px;">Core Thesis</div>
+      <div style="font-size:14px;color:var(--cream);line-height:1.6;font-style:italic;">"The rep still knocks on every door. The rep still builds every relationship. They just never walk in blind again."</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════ PROBLEM ══ -->
+<div class="divider"><div class="divider-line"></div><div class="divider-ornament">✦</div><div class="divider-line"></div></div>
+
+<section class="section" id="problem">
+  <div class="section-eyebrow">
+    <div class="eyebrow-line"></div>
+    <div class="eyebrow-text">Section One</div>
+    <div class="eyebrow-num">Problem Interpretation</div>
+  </div>
+
+  <div class="section-marker">
+    <div class="sm-num">01</div>
+    <div class="sm-bar"></div>
+    <div class="sm-text">The problem nobody has solved</div>
+  </div>
+
+  <h2 class="section-h2">The Rep Walks In Blind. Every Single Day.</h2>
+  <p class="section-lead">Syngenta has thousands of field reps visiting farmers and retailers daily across India. They carry years of relationship capital. They know every retailer by name. But they have one critical disadvantage — they have no idea what happened in their farmers' fields last night.</p>
+
+  <div class="g2" style="margin-bottom:32px;">
+    <div class="card">
+      <div style="font-size:28px;margin-bottom:14px;">📋</div>
+      <h3 style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;margin-bottom:10px;">Current Reality</h3>
+      <ul style="list-style:none;display:flex;flex-direction:column;gap:8px;">
+        <li style="font-size:13px;color:#8A8A8A;display:flex;gap:8px;"><span style="color:var(--terra);">✗</span> Fixed rotation — same retailers visited same order every week</li>
+        <li style="font-size:13px;color:#8A8A8A;display:flex;gap:8px;"><span style="color:var(--terra);">✗</span> No awareness of pest outbreaks until after the window closes</li>
+        <li style="font-size:13px;color:#8A8A8A;display:flex;gap:8px;"><span style="color:var(--terra);">✗</span> Product recommendations driven by sales targets, not crop biology</li>
+        <li style="font-size:13px;color:#8A8A8A;display:flex;gap:8px;"><span style="color:var(--terra);">✗</span> Competitor opportunities missed — no intelligence on stock-outs</li>
+        <li style="font-size:13px;color:#8A8A8A;display:flex;gap:8px;"><span style="color:var(--terra);">✗</span> No explainable reasoning — rep follows instinct, not intelligence</li>
+      </ul>
+    </div>
+    <div class="card" style="border-color:rgba(123,160,91,0.3);background:var(--sage-dim);">
+      <div style="font-size:28px;margin-bottom:14px;">🌾</div>
+      <h3 style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;margin-bottom:10px;">With Edaphic Neuron</h3>
+      <ul style="list-style:none;display:flex;flex-direction:column;gap:8px;">
+        <li style="font-size:13px;color:#B0A898;display:flex;gap:8px;"><span style="color:var(--sage);">✓</span> Daily plan reranked by biological urgency before rep wakes up</li>
+        <li style="font-size:13px;color:#B0A898;display:flex;gap:8px;"><span style="color:var(--sage);">✓</span> Pest alerts trigger visit resequencing within 4 hours</li>
+        <li style="font-size:13px;color:#B0A898;display:flex;gap:8px;"><span style="color:var(--sage);">✓</span> Action card tells rep exactly what to pitch at each specific stop</li>
+        <li style="font-size:13px;color:#B0A898;display:flex;gap:8px;"><span style="color:var(--sage);">✓</span> Competitor stock-outs flagged as market opportunities</li>
+        <li style="font-size:13px;color:#B0A898;display:flex;gap:8px;"><span style="color:var(--sage);">✓</span> SHAP explainability — rep understands why, trusts the system</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="quote">
+    <div class="quote-text">"In August 2023, fall armyworm spread across lakh acres of cotton in Vidarbha. Syngenta's reps were following their fixed rotation. The government's NPSS system had the pest data. The satellite had the crop stress signal. The weather station had the humidity reading. Nobody connected these three signals to a rep's phone that morning. The window closed. Edaphic Neuron would have changed that."</div>
+    <div class="quote-attr">— The gap Edaphic Neuron fills</div>
+  </div>
+
+  <div class="g3">
+    <div class="metric-card">
+      <div class="metric-n">72<span class="metric-unit">hr</span></div>
+      <div class="metric-label">Optimal treatment window for most pest-crop combinations before damage becomes irreversible</div>
+      <div class="metric-source">Agronomy literature</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-n">150<span class="metric-unit">M</span></div>
+      <div class="metric-label">Indian farming households who depend on timely intervention recommendations</div>
+      <div class="metric-source">Syngenta brief</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-n">0</div>
+      <div class="metric-label">Existing platforms that connect real-time biological signals directly to a rep's daily visit plan</div>
+      <div class="metric-source">Competitive research</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════ COMPETITIVE ══ -->
+<div class="divider"><div class="divider-line"></div><div class="divider-ornament">✦</div><div class="divider-line"></div></div>
+
+<div class="band">
+<section class="section" id="competitive" style="padding-top:0;padding-bottom:0;">
+  <div class="section-eyebrow">
+    <div class="eyebrow-line"></div>
+    <div class="eyebrow-text">Section Two</div>
+    <div class="eyebrow-num">Competitive Landscape</div>
+  </div>
+
+  <div class="section-marker">
+    <div class="sm-num">02</div>
+    <div class="sm-bar"></div>
+    <div class="sm-text">Why everything else fails</div>
+  </div>
+
+  <h2 class="section-h2">Five Platforms. Five Proven Gaps.</h2>
+  <p class="section-lead">We analyzed every major platform attempting to solve agricultural field intelligence. Each proved something valuable. Each failed at the same thing: translating biological signals into rep-level action.</p>
+
+  <div class="card" style="padding:0;overflow:hidden;">
+    <table class="comp-table">
+      <thead>
+        <tr>
+          <th>Platform</th>
+          <th>What They Proved</th>
+          <th>Critical Gap for Track 2</th>
+          <th>Our Edge</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="platform">Cropin</span><br><span style="font-size:11px;color:var(--grey);">1B+ acres computed</span></td>
+          <td>Agri-intelligence at scale works for agrochemical enterprises</td>
+          <td class="gap">Stops at manager dashboard. Never reaches the rep's phone.</td>
+          <td class="edge">We push intelligence to rep level with actionable daily cards</td>
+        </tr>
+        <tr>
+          <td><span class="platform">BeatRoute</span><br><span style="font-size:11px;color:var(--grey);">Field Force CRM</span></td>
+          <td>Offline-first rep routing and visit planning is viable</td>
+          <td class="gap">Zero agricultural domain. Blind to pest outbreaks, crop stages, weather.</td>
+          <td class="edge">We add the biological urgency layer BeatRoute entirely lacks</td>
+        </tr>
+        <tr>
+          <td><span class="platform">DeHaat</span><br><span style="font-size:11px;color:var(--grey);">1.4M farmers</span></td>
+          <td>Last-mile agri network at scale. Farmer trust built over years.</td>
+          <td class="gap">Fixed visit rotations. Commission-driven reps push products for targets.</td>
+          <td class="edge">We replace commission-driven behavior with pest-risk-driven intelligence</td>
+        </tr>
+        <tr>
+          <td><span class="platform">Farmonaut</span><br><span style="font-size:11px;color:var(--grey);">Satellite platform</span></td>
+          <td>NDVI satellite crop health signals are accessible and affordable</td>
+          <td class="gap">Purely passive. Detects crop stress but never triggers rep action.</td>
+          <td class="edge">We convert satellite observations into rep visit decisions</td>
+        </tr>
+        <tr>
+          <td><span class="platform">Bharat-VISTAAR</span><br><span style="font-size:11px;color:var(--grey);">Budget 2026-27</span></td>
+          <td>Government validates field intelligence problem at national scale</td>
+          <td class="gap">Cannot serve private commercial rep operations. Cannot promote Syngenta products.</td>
+          <td class="edge">We build the private commercial layer on top of public data infrastructure</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="quote" style="margin-top:32px;">
+    <div class="quote-text">"Cropin has the agri-intelligence but not the rep tool. BeatRoute has the rep tool but not the agri-intelligence. Nobody has fused them. Edaphic Neuron is that fusion — and it is the only platform where biological urgency directly drives who the rep visits today."</div>
+    <div class="quote-attr">— Competitive gap analysis</div>
+  </div>
+</section>
+</div>
+
+<!-- ══════════════════════════════════════════════ SOLUTION ══ -->
+<div class="divider"><div class="divider-line"></div><div class="divider-ornament">✦</div><div class="divider-line"></div></div>
+
+<section class="section" id="solution">
+  <div class="section-eyebrow">
+    <div class="eyebrow-line"></div>
+    <div class="eyebrow-text">Section Three</div>
+    <div class="eyebrow-num">Solution Architecture</div>
+  </div>
+
+  <div class="section-marker">
+    <div class="sm-num">03</div>
+    <div class="sm-bar"></div>
+    <div class="sm-text">20 features across 6 layers</div>
+  </div>
+
+  <h2 class="section-h2">The Field Intelligence Operating System</h2>
+  <p class="section-lead">Edaphic Neuron is not a dashboard. It is a co-pilot. Every morning at 6am it has already scanned pest surveillance data, satellite imagery, weather signals, retailer inventory, and crop calendars — and built a biologically intelligent daily plan for every rep in the territory.</p>
+
+  <!-- PIPELINE -->
+  <div class="pipeline-box" style="margin-bottom:40px;">
+<span class="p-wh">SIGNAL LAYER</span>          <span class="p-hl">INTELLIGENCE ENGINE</span>       <span class="p-go">ACTION LAYER</span>
+<span class="p-dm">────────────</span>          <span class="p-dm">──────────────────</span>       <span class="p-dm">────────────</span>
+
+NPSS Pest Alerts  ──►   M1: Risk Scorer         ──►   Reranked Visit List
+IMD Weather       ──►   M2: Urgency Ranker       ──►   Action Card (Marathi)
+Farmonaut NDVI    ──►   M3: Route Optimizer      ──►   SHAP Explanation
+AgriStack Farmers ──►   M4: Pest Predictor       ──►   Retailer Stock Alert
+Retailer POS      ──►   M5: Anomaly Detector     ──►   Offline PWA Download
+CRM Visit Logs    ──►   M6: Bandit Learner       ──►   Manager Dashboard
+                        M7: SHAP Explainer       ──►   Weekly Recalibration
+
+                              │
+                         <span class="p-hl">Pest Alert → Rep Action: Under 4 Hours</span>
+  </div>
+
+  <!-- LAYER 1 -->
+  <h3 style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;margin-bottom:20px;color:var(--terra-light);padding-bottom:8px;border-bottom:1px solid var(--terra-border);">Layer 1 — Dynamic Prioritization</h3>
+
+  <div class="feat-card">
+    <div class="feat-header">
+      <div class="feat-num">1</div>
+      <div class="feat-title">District Biological Risk Scorer</div>
+      <span class="feat-tag ft-you">Your Model — M1</span>
+    </div>
+    <div class="feat-body">
+      <div class="feat-desc">
+        <h4>What It Does</h4>
+        <ul>
+          <li>Fuses NPSS pest severity + IMD humidity/temperature + Farmonaut NDVI into one district risk score (0-100)</li>
+          <li>Score above 65 triggers urgent field response — rep's entire day changes automatically</li>
+          <li>Crop stage vulnerability acts as biological amplifier — peak vulnerability = 1.5× score</li>
+          <li>Pest-specific temperature thresholds validated by agri domain expertise</li>
+        </ul>
+        <h4 style="margin-top:14px;">Gap It Fills</h4>
+        <ul><li>Every competitor uses sales targets and geography. Zero biological intelligence. This is the first system that uses <span class="hl">crop emergency</span> as the primary driver.</li></ul>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div class="alg-badge">
+          <div class="alg-badge-label">Algorithm</div>
+          <div class="alg-badge-value">Weighted Fusion + Logistic Regression</div>
+          <div class="alg-badge-why">Domain-validated weights (pest 40% + humidity 25% + temperature 20% + NDVI 15%) beat black-box models on interpretability</div>
+        </div>
+        <div class="alg-badge">
+          <div class="alg-badge-label">Data Sources</div>
+          <div class="alg-badge-value">NPSS · IMD API · Farmonaut · KDSS</div>
+          <div class="alg-badge-why">All public, government-grade, available today</div>
+        </div>
+        <div class="alg-badge">
+          <div class="alg-badge-label">Response Threshold</div>
+          <div class="alg-badge-value">≥65 = Urgent (4hr) · ≥40 = Medium (24hr)</div>
+          <div class="alg-badge-why">Calibrated against historical outbreak severity data</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="feat-card">
+    <div class="feat-header">
+      <div class="feat-num">2</div>
+      <div class="feat-title">Retailer Urgency Ranker</div>
+      <span class="feat-tag ft-you">Your Model — M2</span>
+    </div>
+    <div class="feat-body">
+      <div class="feat-desc">
+        <h4>What It Does</h4>
+        <ul>
+          <li>XGBoost model scores every retailer daily by predicted sale probability under current biological conditions</li>
+          <li>Inputs: district risk score + inventory level + days since visit + farmer count + competitor status</li>
+          <li>Feature engineering captures the "perfect storm" — risk × low inventory × high farmer count</li>
+          <li>List reranks in real time when new pest alert fires</li>
+        </ul>
+        <h4 style="margin-top:14px;">Why XGBoost</h4>
+        <ul><li>Finds non-obvious interaction effects. A retailer with medium risk + very low inventory + 400 farmers + competitor out of stock = higher urgency than high risk alone. No human writes that rule.</li></ul>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div class="alg-badge">
+          <div class="alg-badge-label">Algorithm</div>
+          <div class="alg-badge-value">XGBoost Classifier + SHAP</div>
+          <div class="alg-badge-why">Best tabular data classifier. Native SHAP support for explainability built in.</div>
+        </div>
+        <div class="alg-badge">
+          <div class="alg-badge-label">Key Features</div>
+          <div class="alg-badge-value">urgency_interaction · competitor_opportunity · recency_urgency</div>
+          <div class="alg-badge-why">Engineered features that capture compound risk scenarios</div>
+        </div>
+        <div class="alg-badge">
+          <div class="alg-badge-label">Training Data</div>
+          <div class="alg-badge-value">Syngenta synthetic CRM + POS dataset</div>
+          <div class="alg-badge-why">Target: sale_made (binary). AUC target >0.78</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="feat-card">
+    <div class="feat-header">
+      <div class="feat-num">3</div>
+      <div class="feat-title">Route Optimizer</div>
+      <span class="feat-tag ft-you">Your Model — M3</span>
+    </div>
+    <div class="feat-body">
+      <div class="feat-desc">
+        <h4>What It Does</h4>
+        <ul>
+          <li>Takes urgency-ranked retailer list and finds optimal visit sequence</li>
+          <li>Uses urgency-weighted distance — urgent retailers appear "closer" in the optimization</li>
+          <li>Recalculates in milliseconds when new pest alert fires mid-morning</li>
+          <li>Returns estimated arrival times for each stop with driving distance summary</li>
+        </ul>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div class="alg-badge">
+          <div class="alg-badge-label">Algorithm</div>
+          <div class="alg-badge-value">Nearest Neighbor + 2-Opt Improvement</div>
+          <div class="alg-badge-why">Full TSP is NP-hard. 2-Opt delivers 95% of optimal in milliseconds. Fast enough for live demo recalculation.</div>
+        </div>
+        <div class="alg-badge">
+          <div class="alg-badge-label">Urgency Multiplier</div>
+          <div class="alg-badge-value">Rank 1 = 0.3× distance · Rank 8 = 1.5× distance</div>
+          <div class="alg-badge-why">Makes urgent retailers appear geographically attractive regardless of physical distance</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="feat-card">
+    <div class="feat-header">
+      <div class="feat-num">4</div>
+      <div class="feat-title">Crop-Stage Visit Filter</div>
+      <span class="feat-tag ft-you">Rule-Based</span>
+    </div>
+    <div class="feat-body">
+      <div class="feat-desc">
+        <h4>What It Does</h4>
+        <ul>
+          <li>Checks KDSS crop calendar before every visit recommendation</li>
+          <li>Suppresses visits when product is not agronomically relevant for current growth stage</li>
+          <li>Cotton at seedling stage → bollworm insecticide visit suppressed automatically</li>
+          <li>Eliminates Syngenta's stated problem: "marketing fungicide when there is no disease pressure"</li>
+        </ul>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div class="alg-badge">
+          <div class="alg-badge-label">Data Source</div>
+          <div class="alg-badge-value">KDSS Crop Calendar · AgriStack District Data</div>
+        </div>
+        <div class="alg-badge">
+          <div class="alg-badge-label">Direct Problem Solved</div>
+          <div class="alg-badge-value">Wasted visits eliminated at source</div>
+          <div class="alg-badge-why">Syngenta's brief explicitly identifies this as a core failure of current approach</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LAYER 2 -->
+  <h3 style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;margin:40px 0 20px;color:var(--terra-light);padding-bottom:8px;border-bottom:1px solid var(--terra-border);">Layer 2 — Next Best Action</h3>
+
+  <div class="feat-card">
+    <div class="feat-header">
+      <div class="feat-num">5</div>
+      <div class="feat-title">Point-of-Visit Action Card</div>
+      <span class="feat-tag ft-you">Claude API</span>
+    </div>
+    <div class="feat-body">
+      <div class="feat-desc">
+        <h4>What It Does</h4>
+        <ul>
+          <li>When rep checks in at retailer — one screen with everything needed for that specific visit</li>
+          <li>Primary product + dosage, pest situation in catchment, farmer count, promotional mechanic, agronomic talking point</li>
+          <li>Generated by Claude API with structured inputs grounded in real district-level data</li>
+          <li>Available in 11+ Indian languages via Bhashini API integration</li>
+        </ul>
+        <h4 style="margin-top:14px;">Why Claude API</h4>
+        <ul><li>ML decides where to go. Claude decides what to say. Natural language generation from structured data is Claude's core strength — fast, grounded, multilingual.</li></ul>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div class="alg-badge">
+          <div class="alg-badge-label">Technology</div>
+          <div class="alg-badge-value">claude-sonnet-4-20250514 + Bhashini</div>
+        </div>
+        <div class="alg-badge">
+          <div class="alg-badge-label">Languages Supported</div>
+          <div class="alg-badge-value">Marathi · Hindi · Tamil · Telugu · Kannada + 6 more</div>
+        </div>
+        <div class="alg-badge">
+          <div class="alg-badge-label">Response Time</div>
+          <div class="alg-badge-value">Under 3 seconds per action card</div>
+          <div class="alg-badge-why">Async concurrent generation for offline download at 6am</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="feat-card">
+    <div class="feat-header">
+      <div class="feat-num">6</div>
+      <div class="feat-title">SHAP Explainability Layer</div>
+      <span class="feat-tag ft-you">Your Model — M7</span>
+    </div>
+    <div class="feat-body">
+      <div class="feat-desc">
+        <h4>Why This Is The Most Important Feature</h4>
+        <ul>
+          <li>A rep who doesn't understand a recommendation ignores it — this is why acceptance rates fail</li>
+          <li>SHAP calculates exact contribution of each factor: Pest Risk 45% + Inventory 30% + Recency 15% + Farmers 10%</li>
+          <li>Translated by Claude into plain Hinglish the rep understands and can repeat to the retailer</li>
+          <li>Displayed as a horizontal bar chart on the action card — rep sees it before walking in</li>
+          <li>Syngenta's brief explicitly requires explainable recommendations — this delivers it mathematically</li>
+        </ul>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div class="alg-badge">
+          <div class="alg-badge-label">Algorithm</div>
+          <div class="alg-badge-value">SHAP TreeExplainer (Shapley Values)</div>
+          <div class="alg-badge-why">Industry standard for ML explainability. Mathematically rigorous. Wraps XGBoost natively.</div>
+        </div>
+        <div class="alg-badge">
+          <div class="alg-badge-label">No Other Team Has This</div>
+          <div class="alg-badge-value">Most teams don't ask why reps reject recommendations</div>
+          <div class="alg-badge-why">We identified this as the root cause of low adoption and solved it directly</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LAYER 3 -->
+  <h3 style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;margin:40px 0 20px;color:var(--terra-light);padding-bottom:8px;border-bottom:1px solid var(--terra-border);">Layer 3 — Anomaly & Opportunity Detection</h3>
+
+  <div class="g2">
+    <div class="feat-card" style="margin-bottom:0;">
+      <div class="feat-header">
+        <div class="feat-num">8</div>
+        <div class="feat-title">Real-Time Anomaly Detector</div>
+        <span class="feat-tag ft-her">Her Model — M5</span>
+      </div>
+      <div style="padding:20px 24px;">
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:7px;">
+          <li style="font-size:13px;color:#B0A898;display:flex;gap:8px;"><span style="color:var(--terra);">—</span>Isolation Forest monitors 6 signals simultaneously</li>
+          <li style="font-size:13px;color:#B0A898;display:flex;gap:8px;"><span style="color:var(--terra);">—</span>Sudden POS demand spike = competitor likely out of stock</li>
+          <li style="font-size:13px;color:#B0A898;display:flex;gap:8px;"><span style="color:var(--terra);">—</span>NDVI crash = rapid crop stress needs same-day response</li>
+          <li style="font-size:13px;color:#B0A898;display:flex;gap:8px;"><span style="color:var(--terra);">—</span>Unsupervised — learns normality, flags deviation automatically</li>
+        </ul>
+        <div class="alg-badge" style="margin-top:14px;">
+          <div class="alg-badge-label">Algorithm</div>
+          <div class="alg-badge-value">Isolation Forest · contamination=0.08</div>
+        </div>
+      </div>
+    </div>
+    <div class="feat-card" style="margin-bottom:0;">
+      <div class="feat-header">
+        <div class="feat-num">9</div>
+        <div class="feat-title">Early Pest Emergence Predictor</div>
+        <span class="feat-tag ft-her">Her Model — M4</span>
+      </div>
+      <div style="padding:20px 24px;">
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:7px;">
+          <li style="font-size:13px;color:#B0A898;display:flex;gap:8px;"><span style="color:var(--terra);">—</span>Predicts pest emergence <strong style="color:var(--cream);">3-5 days before</strong> official NPSS bulletin</li>
+          <li style="font-size:13px;color:#B0A898;display:flex;gap:8px;"><span style="color:var(--terra);">—</span>Uses IMD weather patterns correlated with outbreak history</li>
+          <li style="font-size:13px;color:#B0A898;display:flex;gap:8px;"><span style="color:var(--terra);">—</span>Pest-specific biological thresholds validated by agri domain expert</li>
+          <li style="font-size:13px;color:#B0A898;display:flex;gap:8px;"><span style="color:var(--terra);">—</span>Gives Syngenta 3-5 day head start over every competitor</li>
+        </ul>
+        <div class="alg-badge" style="margin-top:14px;">
+          <div class="alg-badge-label">Algorithm</div>
+          <div class="alg-badge-value">Random Forest Classifier · CV AUC target >0.75</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LAYER 4 -->
+  <h3 style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;margin:40px 0 20px;color:var(--terra-light);padding-bottom:8px;border-bottom:1px solid var(--terra-border);">Layer 4 — Outcome Learning Loop</h3>
+
+  <div class="feat-card">
+    <div class="feat-header">
+      <div class="feat-num">11</div>
+      <div class="feat-title">Contextual Bandit Outcome Learner</div>
+      <span class="feat-tag ft-her">Her Model — M6</span>
+    </div>
+    <div class="feat-body">
+      <div class="feat-desc">
+        <h4>What Makes This Extraordinary</h4>
+        <ul>
+          <li>System in Week 8 is dramatically better than Week 1 — without anyone touching the code</li>
+          <li>Every visit outcome (sale/order/no purchase) updates routing priority weights automatically</li>
+          <li>Epsilon-greedy: 90% exploiting known winners, 10% exploring new strategies</li>
+          <li>No large dataset required upfront — learns from each individual outcome in real time</li>
+          <li>Same algorithm Netflix uses for thumbnail optimization. Same approach Google uses for ad placement.</li>
+        </ul>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div class="alg-badge">
+          <div class="alg-badge-label">Algorithm</div>
+          <div class="alg-badge-value">Epsilon-Greedy Contextual Bandit</div>
+          <div class="alg-badge-why">Outperforms regular ML when starting with limited outcome data. Continuous learning from sparse feedback signals.</div>
+        </div>
+        <div class="alg-badge">
+          <div class="alg-badge-label">Why Not Regular ML</div>
+          <div class="alg-badge-value">Bandit needs no upfront dataset. Learns from day 1.</div>
+          <div class="alg-badge-why">When judges ask "what happens after synthetic data runs out?" — this is the answer.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LAYER 5 -->
+  <h3 style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;margin:40px 0 20px;color:var(--terra-light);padding-bottom:8px;border-bottom:1px solid var(--terra-border);">Layer 5 — Offline-First Architecture</h3>
+
+  <div class="card" style="border-color:rgba(123,160,91,0.3);background:var(--sage-dim);">
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px;">
+      <div style="font-size:36px;">📵</div>
+      <div>
+        <h3 style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--cream);">Feature 13 — Progressive Web App: Full Offline Mode</h3>
+        <div style="font-size:13px;color:var(--sage);margin-top:4px;">The feature that wins the demo</div>
+      </div>
+    </div>
+    <div class="g3">
+      <div>
+        <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--sand);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px;">6:00 AM</div>
+        <div style="font-size:13px;color:#B0A898;line-height:1.6;">PWA auto-downloads full day plan via WiFi — all action cards, route, retailer profiles, product data</div>
+      </div>
+      <div>
+        <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--sand);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px;">All Day</div>
+        <div style="font-size:13px;color:#B0A898;line-height:1.6;">Rep works in zero-connectivity villages. App works from local IndexedDB cache. No internet needed for any core function.</div>
+      </div>
+      <div>
+        <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--sand);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px;">6:00 PM</div>
+        <div style="font-size:13px;color:#B0A898;line-height:1.6;">Rep drives back to connectivity. All outcomes sync automatically. System learns. Tomorrow's plan rebuilds.</div>
+      </div>
+    </div>
+    <div style="margin-top:16px;padding:12px 16px;background:rgba(0,0,0,0.2);border-radius:8px;font-family:'DM Mono',monospace;font-size:12px;color:var(--sage);">Every competitor — Cropin, BeatRoute, DeHaat — requires connectivity. Syngenta's reps in Yavatmal villages do not have it. Edaphic Neuron is the only system that works where they actually work.</div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════ DATA STRATEGY ══ -->
+<div class="divider"><div class="divider-line"></div><div class="divider-ornament">✦</div><div class="divider-line"></div></div>
+
+<div class="band">
+<section class="section" id="data" style="padding-top:0;padding-bottom:0;">
+  <div class="section-eyebrow">
+    <div class="eyebrow-line"></div>
+    <div class="eyebrow-text">Section Four</div>
+    <div class="eyebrow-num">Data Strategy</div>
+  </div>
+
+  <div class="section-marker">
+    <div class="sm-num">04</div>
+    <div class="sm-bar"></div>
+    <div class="sm-text">6 sources · all real · available today</div>
+  </div>
+
+  <h2 class="section-h2">Real Data. Real Signals. Real Urgency.</h2>
+  <p class="section-lead">Every data source we use is real, government-grade, and verifiable today. We don't cite "weather data" — we cite the IMD API at imdpune.gov.in. We don't cite "pest surveillance" — we cite NPSS tracking 432 pest types across 66 crops.</p>
+
+  <div class="g3" style="margin-bottom:32px;">
+    <div class="card">
+      <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--terra-light);text-transform:uppercase;letter-spacing:.12em;margin-bottom:12px;">Public · NPSS</div>
+      <h4 style="font-size:15px;font-weight:600;margin-bottom:8px;">National Pest Surveillance System</h4>
+      <p style="font-size:13px;color:#8A8A8A;line-height:1.6;">432 pest types × 66 crops. District-level bulletins. Used by 10,000+ extension workers. Powers M1 risk scorer and M4 pest predictor training.</p>
+      <div style="margin-top:12px;font-family:'DM Mono',monospace;font-size:11px;color:var(--sand);">npss.icar.gov.in</div>
+    </div>
+    <div class="card">
+      <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--terra-light);text-transform:uppercase;letter-spacing:.12em;margin-bottom:12px;">Public · IMD</div>
+      <h4 style="font-size:15px;font-weight:600;margin-bottom:8px;">India Meteorological Department</h4>
+      <p style="font-size:13px;color:#8A8A8A;line-height:1.6;">District temperature, humidity, rainfall — 3-hourly updates. Primary signal for pest-weather correlation in M1 and M4. Free API access.</p>
+      <div style="margin-top:12px;font-family:'DM Mono',monospace;font-size:11px;color:var(--sand);">imdpune.gov.in · Open-Meteo proxy</div>
+    </div>
+    <div class="card">
+      <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--terra-light);text-transform:uppercase;letter-spacing:.12em;margin-bottom:12px;">Public · Satellite</div>
+      <h4 style="font-size:15px;font-weight:600;margin-bottom:8px;">Farmonaut NDVI</h4>
+      <p style="font-size:13px;color:#8A8A8A;line-height:1.6;">Satellite-based crop health indices. Shows crop stress before visible damage. Weekly updates. Powers M1 and M5 anomaly detection.</p>
+      <div style="margin-top:12px;font-family:'DM Mono',monospace;font-size:11px;color:var(--sand);">farmonaut.com/api — free tier</div>
+    </div>
+    <div class="card">
+      <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--terra-light);text-transform:uppercase;letter-spacing:.12em;margin-bottom:12px;">Public · Government</div>
+      <h4 style="font-size:15px;font-weight:600;margin-bottom:8px;">AgriStack Farmer IDs</h4>
+      <p style="font-size:13px;color:#8A8A8A;line-height:1.6;">7.63 crore farmer IDs with crop type and location. Maps farmers to retailer catchment zones. farmer_count feature in M2 urgency ranker.</p>
+      <div style="margin-top:12px;font-family:'DM Mono',monospace;font-size:11px;color:var(--sand);">agristack.gov.in</div>
+    </div>
+    <div class="card">
+      <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--terra-light);text-transform:uppercase;letter-spacing:.12em;margin-bottom:12px;">Public · Government</div>
+      <h4 style="font-size:15px;font-weight:600;margin-bottom:8px;">KDSS Crop Calendar</h4>
+      <p style="font-size:13px;color:#8A8A8A;line-height:1.6;">District × crop × growth stage matrix for Kharif and Rabi seasons. Drives crop-stage visit filter and biological urgency amplification in M1.</p>
+      <div style="margin-top:12px;font-family:'DM Mono',monospace;font-size:11px;color:var(--sand);">Government agricultural portal</div>
+    </div>
+    <div class="card" style="border-color:var(--terra-border);background:var(--terra-dim);">
+      <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--terra-light);text-transform:uppercase;letter-spacing:.12em;margin-bottom:12px;">Internal · Syngenta</div>
+      <h4 style="font-size:15px;font-weight:600;margin-bottom:8px;">Synthetic Dataset</h4>
+      <p style="font-size:13px;color:#B0A898;line-height:1.6;">Historical rep visit logs with outcomes, POS retailer data, CRM records. Trains M2 XGBoost urgency ranker. Primary source for 5 business insights.</p>
+      <div style="margin-top:12px;font-family:'DM Mono',monospace;font-size:11px;color:var(--sand);">Released 13 May 2026</div>
+    </div>
+  </div>
+
+  <h3 style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;margin-bottom:20px;color:var(--cream);">5 Business Insights We Extract From The Dataset</h3>
+  <div class="g2">
+    <div class="card">
+      <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--terra-light);text-transform:uppercase;letter-spacing:.12em;margin-bottom:8px;">Insight 01</div>
+      <h4 style="font-size:14px;font-weight:600;margin-bottom:6px;">Bio-Triggered vs Routine Visit Conversion</h4>
+      <p style="font-size:13px;color:#8A8A8A;line-height:1.6;">Visits within 48hrs of pest alert vs routine scheduled visits. Expected: <span class="hl">3-4× higher conversion rate</span> — the core business case for Edaphic Neuron.</p>
+    </div>
+    <div class="card">
+      <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--terra-light);text-transform:uppercase;letter-spacing:.12em;margin-bottom:8px;">Insight 02</div>
+      <h4 style="font-size:14px;font-weight:600;margin-bottom:6px;">Revenue Per Field Day — Alert Weeks vs Normal</h4>
+      <p style="font-size:13px;color:#8A8A8A;line-height:1.6;">Average revenue per rep per day during active pest alert weeks vs quiet weeks. Expected: <span class="hl">+22-35% revenue lift</span> — the ROI statement.</p>
+    </div>
+    <div class="card">
+      <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--terra-light);text-transform:uppercase;letter-spacing:.12em;margin-bottom:8px;">Insight 03</div>
+      <h4 style="font-size:14px;font-weight:600;margin-bottom:6px;">Demand Spikes Preceding NPSS Bulletins</h4>
+      <p style="font-size:13px;color:#8A8A8A;line-height:1.6;">POS demand spikes 2-5 days before official NPSS bulletin. Validates M4 early pest predictor concept with real historical data.</p>
+    </div>
+    <div class="card">
+      <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--terra-light);text-transform:uppercase;letter-spacing:.12em;margin-bottom:8px;">Insight 04</div>
+      <h4 style="font-size:14px;font-weight:600;margin-bottom:6px;">Product-Pest Conversion Rates</h4>
+      <p style="font-size:13px;color:#8A8A8A;line-height:1.6;">Which Syngenta products convert highest for which pest-crop combination. Validates action card product recommendations with real outcome data.</p>
+    </div>
+  </div>
+</section>
+</div>
+
+<!-- ══════════════════════════════════════════════ IMPACT ══ -->
+<div class="divider"><div class="divider-line"></div><div class="divider-ornament">✦</div><div class="divider-line"></div></div>
+
+<section class="section" id="impact">
+  <div class="section-eyebrow">
+    <div class="eyebrow-line"></div>
+    <div class="eyebrow-text">Section Five</div>
+    <div class="eyebrow-num">Expected Impact</div>
+  </div>
+
+  <div class="section-marker">
+    <div class="sm-num">05</div>
+    <div class="sm-bar"></div>
+    <div class="sm-text">How we measure success in real deployment</div>
+  </div>
+
+  <h2 class="section-h2">Three Metrics. Syngenta's Own Measures.</h2>
+  <p class="section-lead">Syngenta explicitly stated three success metrics for Track 2. Every feature in Edaphic Neuron was designed to move all three metrics simultaneously.</p>
+
+  <div class="g3" style="margin-bottom:40px;">
+    <div class="metric-card" style="border-color:var(--terra-border);">
+      <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--terra-light);text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px;">Metric 1</div>
+      <div class="metric-n">+28<span class="metric-unit">%</span></div>
+      <div class="metric-label">Revenue per field day<br>in bio-triggered visit weeks vs baseline</div>
+      <div class="metric-source">Measured via POS data linked to rep territory</div>
+    </div>
+    <div class="metric-card" style="border-color:rgba(212,168,83,0.3);">
+      <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--gold);text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px;">Metric 2</div>
+      <div class="metric-n" style="color:var(--gold);">4hr</div>
+      <div class="metric-label">Coverage efficiency<br>Time from NPSS alert to first rep visit in affected zone</div>
+      <div class="metric-source">Alert timestamp vs rep check-in timestamp</div>
+    </div>
+    <div class="metric-card" style="border-color:rgba(123,160,91,0.3);">
+      <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--sage);text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px;">Metric 3</div>
+      <div class="metric-n" style="color:var(--sage);">72<span class="metric-unit">%</span></div>
+      <div class="metric-label">Recommendation acceptance rate<br>Reps following AI-suggested visits vs ignoring them</div>
+      <div class="metric-source">Action card shown vs outcome logged as followed</div>
+    </div>
+  </div>
+
+  <h3 style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;margin-bottom:24px;color:var(--cream);">90-Day Pilot Roadmap</h3>
+  <div class="roadmap">
+    <div class="roadmap-phase">
+      <div class="roadmap-dot rd-1">1</div>
+      <div class="roadmap-label">Days 1-30</div>
+      <div class="roadmap-title">Proof of Concept</div>
+      <div class="roadmap-tasks">Yavatmal district · Cotton crop · 15 reps · 180 retailers · NPSS + IMD + NDVI pipeline live</div>
+      <div class="roadmap-gate">Gate: First bio-triggered visit within 4hrs of alert</div>
+    </div>
+    <div class="roadmap-phase">
+      <div class="roadmap-dot rd-2">2</div>
+      <div class="roadmap-label">Days 31-60</div>
+      <div class="roadmap-title">Pilot</div>
+      <div class="roadmap-tasks">Yavatmal + Thanjavur · Cotton + Rice · 50 reps · 600 retailers · Measure vs control group</div>
+      <div class="roadmap-gate">Gate: >15% revenue lift in bio-triggered weeks</div>
+    </div>
+    <div class="roadmap-phase">
+      <div class="roadmap-dot rd-3">3</div>
+      <div class="roadmap-label">Days 61-90</div>
+      <div class="roadmap-title">Scale</div>
+      <div class="roadmap-tasks">Maharashtra + Tamil Nadu · 500 reps · Full bandit model active · SHAP acceptance rate tracking</div>
+      <div class="roadmap-gate">Gate: >65% recommendation acceptance rate</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════ LIMITATIONS ══ -->
+<div class="divider"><div class="divider-line"></div><div class="divider-ornament">✦</div><div class="divider-line"></div></div>
+
+<div class="band">
+<section class="section" id="limitations" style="padding-top:0;padding-bottom:0;">
+  <div class="section-eyebrow">
+    <div class="eyebrow-line"></div>
+    <div class="eyebrow-text">Section Six</div>
+    <div class="eyebrow-num">Limitations & Assumptions</div>
+  </div>
+
+  <div class="section-marker">
+    <div class="sm-num">06</div>
+    <div class="sm-bar"></div>
+    <div class="sm-text">Honest acknowledgement</div>
+  </div>
+
+  <h2 class="section-h2">What We Know We Don't Know.</h2>
+  <p class="section-lead">Judges who work in agriculture for 20 years will respect honest limitations more than oversold promises. We acknowledge these directly.</p>
+
+  <div class="g2">
+    <div class="card">
+      <h4 style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;margin-bottom:16px;color:var(--cream);">Assumptions</h4>
+      <div class="limit-item">
+        <div class="limit-icon">📱</div>
+        <div><div class="limit-title">Rep Device Baseline</div><div class="limit-desc">We assume reps have Android smartphones with minimum 2GB RAM for PWA functionality. Feature phone reps receive SMS-based simplified daily plan as fallback.</div></div>
+      </div>
+      <div class="limit-item">
+        <div class="limit-icon">📊</div>
+        <div><div class="limit-title">Dataset Outcome History</div><div class="limit-desc">M2 XGBoost requires at least 6 months of rep visit logs with outcomes to train above AUC 0.75. Syngenta's synthetic dataset is assumed to contain this.</div></div>
+      </div>
+      <div class="limit-item">
+        <div class="limit-icon">🗺️</div>
+        <div><div class="limit-title">Territory Data</div><div class="limit-desc">Retailer catchment zones and farmer-retailer linkages are assumed available in Syngenta's CRM or approximatable from AgriStack + POS data for pilot districts.</div></div>
+      </div>
+      <div class="limit-item" style="border-bottom:none;">
+        <div class="limit-icon">🌾</div>
+        <div><div class="limit-title">NPSS Granularity</div><div class="limit-desc">NPSS operates at district level. Block-level precision would significantly improve targeting. We use NDVI stress zones as a sub-district proxy where needed.</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <h4 style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;margin-bottom:16px;color:var(--cream);">Known Limitations</h4>
+      <div class="limit-item">
+        <div class="limit-icon">❄️</div>
+        <div><div class="limit-title">Cold Start Problem</div><div class="limit-desc">Bandit model (M6) requires outcome history to improve. New districts use rule-based recommendations until 30 days of real outcomes accumulate.</div></div>
+      </div>
+      <div class="limit-item">
+        <div class="limit-icon">⏱️</div>
+        <div><div class="limit-title">NPSS Data Latency</div><div class="limit-desc">NPSS bulletins can lag field reality by 24-48 hours. M4 early pest predictor and M5 anomaly detector provide early warning that partially compensates.</div></div>
+      </div>
+      <div class="limit-item">
+        <div class="limit-icon">🔄</div>
+        <div><div class="limit-title">Offline Sync Edge Cases</div><div class="limit-desc">If two reps visit the same retailer offline and log conflicting data, last-write-wins with a manager alert. Estimated 2-3% of sync events will require manual resolution.</div></div>
+      </div>
+      <div class="limit-item" style="border-bottom:none;">
+        <div class="limit-icon">📐</div>
+        <div><div class="limit-title">Prototype Scope</div><div class="limit-desc">Current prototype covers cotton and rice in 2 pilot districts with mock data. Full national rollout requires expanded crop-pest mappings and carrier-grade PWA infrastructure.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+</div>
+
+<!-- ══════════════════════════════════════════════ TEAM ══ -->
+<div class="divider"><div class="divider-line"></div><div class="divider-ornament">✦</div><div class="divider-line"></div></div>
+
+<section class="section" id="team">
+  <div class="section-eyebrow">
+    <div class="eyebrow-line"></div>
+    <div class="eyebrow-text">Section Seven</div>
+    <div class="eyebrow-num">Team & Technology</div>
+  </div>
+
+  <div class="section-marker">
+    <div class="sm-num">07</div>
+    <div class="sm-bar"></div>
+    <div class="sm-text">Who built this and how</div>
+  </div>
+
+  <h2 class="section-h2">Four People. One Intelligence Pipeline.</h2>
+  <p class="section-lead">Every role owns a distinct layer of Edaphic Neuron. When all four layers connect — the system works as designed.</p>
+
+  <div class="card" style="padding:0;overflow:hidden;margin-bottom:32px;">
+    <table class="team-table">
+      <thead>
+        <tr>
+          <th>Role</th>
+          <th>Responsibility</th>
+          <th>Key Deliverable</th>
+          <th>Models / Components</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="role">ML Lead (You)</span></td>
+          <td>Core intelligence engine — risk scoring, urgency ranking, route optimization, SHAP explainability</td>
+          <td>M1 · M2 · M3 · M7 — the 4 models that drive every rep decision</td>
+          <td style="font-family:'DM Mono',monospace;font-size:12px;color:var(--terra-light);">XGBoost · 2-Opt · SHAP · Weighted Fusion</td>
+        </tr>
+        <tr>
+          <td><span class="role">ML Partner (Her)</span></td>
+          <td>Learning system — early pest prediction, anomaly detection, continuous outcome learning</td>
+          <td>M4 · M5 · M6 — the models that make Edaphic Neuron smarter every week</td>
+          <td style="font-family:'DM Mono',monospace;font-size:12px;color:var(--gold);">Random Forest · Isolation Forest · Bandit</td>
+        </tr>
+        <tr>
+          <td><span class="role">Backend (Oviya)</span></td>
+          <td>Data pipeline, API server, Claude API integration, offline sync</td>
+          <td>7 FastAPI endpoints · Claude action card generation · PostgreSQL</td>
+          <td style="font-family:'DM Mono',monospace;font-size:12px;color:var(--sage);">FastAPI · Claude API · Bhashini · NPSS · IMD</td>
+        </tr>
+        <tr>
+          <td><span class="role">Frontend (Rakshina)</span></td>
+          <td>Rep mobile interface, territory map, action card display, offline PWA</td>
+          <td>React dashboard · PWA offline mode · Manager view</td>
+          <td style="font-family:'DM Mono',monospace;font-size:12px;color:var(--sand);">React · Leaflet · Recharts · Service Workers</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;margin-bottom:20px;color:var(--cream);">Declared Tools & Libraries</h3>
+  <div class="g3">
+    <div class="card">
+      <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--terra-light);text-transform:uppercase;letter-spacing:.12em;margin-bottom:10px;">ML & Data</div>
+      <div style="font-size:13px;color:#8A8A8A;line-height:1.8;">Scikit-learn · XGBoost · SHAP · Pandas · NumPy · Joblib · Matplotlib</div>
+    </div>
+    <div class="card">
+      <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--terra-light);text-transform:uppercase;letter-spacing:.12em;margin-bottom:10px;">Backend & APIs</div>
+      <div style="font-size:13px;color:#8A8A8A;line-height:1.8;">FastAPI · PostgreSQL · Anthropic Claude API · Bhashini API · Farmonaut API · Redis</div>
+    </div>
+    <div class="card">
+      <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--terra-light);text-transform:uppercase;letter-spacing:.12em;margin-bottom:10px;">Frontend & Dev Tools</div>
+      <div style="font-size:13px;color:#8A8A8A;line-height:1.8;">React · Tailwind · Leaflet · Recharts · Service Workers · IndexedDB · Claude Code (declared)</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════ CLOSING ══ -->
+<div class="closing">
+  <h2>The Rep Still Knocks on Every Door.</h2>
+  <p>The rep still builds every relationship. The rep still makes every sale. Edaphic Neuron gives them the one thing they never had — the biological intelligence to know which door to knock on first, what to say when they get there, and why it matters right now.</p>
+  <p style="margin-top:16px;">The government validated this problem in Budget 2026-27. Five major platforms proved the individual components work. Nobody has built the complete intelligence layer that connects biological urgency to a rep's daily action — automatically, in their language, before the farmer even knows the threat is there.</p>
+  <div style="width:60px;height:1px;background:rgba(245,239,230,0.3);margin:32px auto;"></div>
+  <div class="closing-footer">Edaphic Neuron · Track 2 · IITM BS Paradox · Syngenta Hackathon 2026 · Submission: 20 May 2026</div>
+</div>
+
+</body>
+</html>

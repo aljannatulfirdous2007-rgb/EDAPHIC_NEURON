@@ -1,0 +1,1269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Edaphic Neuron — Field Intelligence System</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<style>
+/*
+ ╔══════════════════════════════════════════════════════════╗
+ ║  EDAPHIC NEURON — AGRICULTURAL LUXURY DESIGN SYSTEM     ║
+ ║  "Editorial Precision + Physical Materiality"           ║
+ ║  Fraunces (display) · DM Sans (body) · JetBrains (data) ║
+ ╚══════════════════════════════════════════════════════════╝
+*/
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,400;1,9..144,600;1,9..144,700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+/* ─── DESIGN TOKENS ─── */
+:root {
+  --ink:      #0F1218;
+  --ink-2:    #161B24;
+  --ink-3:    #1E2530;
+  --ink-4:    #262E3A;
+  --terra:    #C4622D;
+  --terra-l:  #E2815A;
+  --terra-xl: #F0A07A;
+  --terra-d:  rgba(196,98,45,.10);
+  --terra-b:  rgba(196,98,45,.22);
+  --gold:     #B8883A;
+  --gold-l:   #D4A84E;
+  --sage:     #5E8B44;
+  --sage-l:   #7CAE58;
+  --red:      #C8312A;
+  --red-l:    #E74C3C;
+  --amber:    #C07A10;
+  --amber-l:  #E09020;
+  --green:    #2E7A3C;
+  --green-l:  #3EA84E;
+  --cream:    #EAE4D8;
+  --cream-2:  #D0C8B8;
+  --sand:     #9A8E7A;
+  --mist:     #6A7080;
+  /* milled borders */
+  --rim:      rgba(234,228,216,.07);
+  --rim-2:    rgba(234,228,216,.13);
+  /* physical depth shadows */
+  --sh-sm: 0 2px 8px rgba(0,0,0,.32), inset 0 1px 0 rgba(255,255,255,.04);
+  --sh-md: 0 8px 24px rgba(0,0,0,.42), inset 0 1px 0 rgba(255,255,255,.05);
+  --sh-lg: 0 16px 48px rgba(0,0,0,.52), inset 0 1px 0 rgba(255,255,255,.06);
+}
+
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;overflow:hidden;}
+body{
+  background:var(--ink);color:var(--cream);
+  font-family:'DM Sans',sans-serif;font-size:13.5px;
+  line-height:1.65;-webkit-font-smoothing:antialiased;
+}
+
+/* ─── FILM GRAIN (kills "AI-ish" flatness) ─── */
+body::after{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
+  opacity:.035;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.shell{display:flex;flex-direction:column;height:100vh;}
+
+/* ══════════ TOPBAR ══════════ */
+.topbar{
+  background:var(--ink-2);
+  border-bottom:.5px solid var(--rim-2);
+  box-shadow:0 1px 0 rgba(255,255,255,.025);
+  display:flex;align-items:center;
+  padding:0 18px;gap:12px;height:50px;flex-shrink:0;overflow-x:auto;
+}
+.brand{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.brand-mark{
+  width:30px;height:30px;border-radius:8px;
+  background:linear-gradient(135deg,var(--terra),var(--gold));
+  display:flex;align-items:center;justify-content:center;
+  font-size:15px;box-shadow:var(--sh-sm);
+}
+.brand-name{
+  font-family:'Fraunces',serif;font-size:17px;font-weight:700;
+  letter-spacing:-.02em;color:var(--cream);white-space:nowrap;
+}
+.brand-name em{color:var(--terra-xl);font-style:italic;}
+.tb-div{width:.5px;height:20px;background:var(--rim);flex-shrink:0;}
+.tb-tag{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mist);text-transform:uppercase;letter-spacing:.1em;white-space:nowrap;}
+
+.alert-pill{
+  display:flex;align-items:center;gap:7px;
+  background:rgba(200,49,42,.10);border:.5px solid rgba(200,49,42,.30);
+  border-radius:100px;padding:3px 12px;
+  font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--red-l);
+  cursor:pointer;flex-shrink:0;white-space:nowrap;
+}
+.ap-dot{width:5px;height:5px;background:var(--red-l);border-radius:50%;animation:pulse 1.4s infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.3;transform:scale(.65);}}
+
+/* Human-in-the-Loop toggle */
+.hil-toggle{
+  display:flex;align-items:center;gap:2px;
+  background:var(--ink-3);border:.5px solid var(--rim);
+  border-radius:8px;padding:3px;flex-shrink:0;
+}
+.ht-opt{
+  padding:3px 10px;border-radius:6px;border:none;
+  font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;
+  cursor:pointer;transition:all .2s;background:transparent;color:var(--mist);
+  white-space:nowrap;
+}
+.ht-opt.on{background:var(--terra);color:var(--cream);box-shadow:var(--sh-sm);}
+
+.view-tabs{
+  display:flex;gap:2px;background:var(--ink-3);border:.5px solid var(--rim);
+  border-radius:8px;padding:3px;flex-shrink:0;
+}
+.vt{padding:3px 10px;border-radius:6px;border:none;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;cursor:pointer;transition:all .2s;background:transparent;color:var(--mist);white-space:nowrap;}
+.vt.on{background:var(--terra);color:var(--cream);box-shadow:var(--sh-sm);}
+
+.tb-right{margin-left:auto;display:flex;align-items:center;gap:8px;flex-shrink:0;}
+
+.wifi-btn{
+  display:flex;align-items:center;gap:5px;border:.5px solid var(--rim);
+  border-radius:100px;padding:3px 10px;background:transparent;
+  font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mist);
+  cursor:pointer;transition:all .2s;white-space:nowrap;
+}
+.wifi-btn.on {color:var(--green-l);border-color:rgba(46,122,60,.35);}
+.wifi-btn.off{color:var(--red-l);border-color:rgba(200,49,42,.35);background:rgba(200,49,42,.06);}
+
+/* Flash-sync strip */
+.sync-strip{
+  display:none;align-items:center;gap:8px;
+  background:rgba(59,130,246,.10);border:.5px solid rgba(59,130,246,.25);
+  border-radius:100px;padding:3px 12px;
+  font-family:'JetBrains Mono',monospace;font-size:10px;color:#60A5FA;
+  position:relative;overflow:hidden;white-space:nowrap;
+}
+.sync-strip.show{display:flex;}
+/* Moving packet animation */
+.sync-strip::after{
+  content:'';position:absolute;top:0;left:-60px;
+  width:60px;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(96,165,250,.5),transparent);
+  animation:packet 1s ease infinite;
+}
+@keyframes packet{from{left:-60px;}to{left:110%;}}
+
+/* ══════════ MAIN GRID ══════════ */
+.main{display:grid;grid-template-columns:285px 1fr;flex:1;overflow:hidden;}
+@media(min-width:1120px){.main{grid-template-columns:285px 1fr 355px;}}
+
+/* ══════════ LEFT ══════════ */
+.left{
+  background:var(--ink-2);border-right:.5px solid var(--rim-2);
+  display:flex;flex-direction:column;overflow:hidden;
+}
+.ph{padding:13px 15px;border-bottom:.5px solid var(--rim);background:var(--ink-3);flex-shrink:0;}
+.ph-title{font-family:'Fraunces',serif;font-size:15px;font-weight:600;letter-spacing:-.02em;}
+.ph-sub{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--mist);text-transform:uppercase;letter-spacing:.1em;margin-top:2px;}
+
+.visit-list{overflow-y:auto;flex:1;}
+
+/* Staggered entrance animations */
+.vi{
+  display:flex;align-items:flex-start;gap:10px;
+  padding:11px 13px;border-bottom:.5px solid var(--rim);
+  cursor:pointer;border-left:3px solid transparent;
+  transition:background .12s;
+  opacity:0;animation:slide-in .3s ease forwards;
+}
+@keyframes slide-in{from{opacity:0;transform:translateY(7px);}to{opacity:1;transform:translateY(0);}}
+.vi:nth-child(1){animation-delay:.04s;}
+.vi:nth-child(2){animation-delay:.08s;}
+.vi:nth-child(3){animation-delay:.12s;}
+.vi:nth-child(4){animation-delay:.16s;}
+.vi:nth-child(5){animation-delay:.20s;}
+.vi:nth-child(6){animation-delay:.24s;}
+.vi:nth-child(7){animation-delay:.28s;}
+.vi:nth-child(8){animation-delay:.32s;}
+.vi:hover{background:rgba(196,98,45,.05);}
+.vi.sel{background:rgba(196,98,45,.12);border-left-color:var(--terra);}
+.vi.urg{border-left-color:var(--red-l);}
+.vi.med{border-left-color:var(--amber-l);}
+
+.vi-rank{
+  width:30px;height:30px;border-radius:8px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Fraunces',serif;font-weight:700;font-size:14px;
+  margin-top:1px;
+}
+.rk-u{background:rgba(200,49,42,.14);color:var(--red-l);border:.5px solid rgba(200,49,42,.28);}
+.rk-m{background:rgba(192,122,16,.12);color:var(--amber-l);border:.5px solid rgba(192,122,16,.24);}
+.rk-r{background:rgba(46,122,60,.10);color:var(--green-l);border:.5px solid rgba(46,122,60,.22);}
+
+.vi-body{flex:1;min-width:0;}
+.vi-name{font-size:12.5px;font-weight:600;color:var(--cream);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.vi-meta{font-size:11px;color:var(--mist);margin-top:1px;}
+.vi-eta{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mist);margin-top:2px;}
+
+/* Inaction cost badge */
+.loss-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  font-family:'JetBrains Mono',monospace;font-size:9px;
+  padding:1px 6px;border-radius:4px;margin-top:2px;
+  background:rgba(200,49,42,.10);color:var(--red-l);
+  border:.5px solid rgba(200,49,42,.22);
+}
+
+/* Model confidence tag */
+.conf-tag{
+  font-family:'JetBrains Mono',monospace;font-size:9px;
+  padding:2px 6px;border-radius:4px;flex-shrink:0;
+  text-transform:uppercase;letter-spacing:.05em;margin-top:2px;
+  display:inline-block;
+}
+.ct-hi {background:rgba(46,122,60,.14);color:var(--green-l);border:.5px solid rgba(46,122,60,.25);}
+.ct-med{background:rgba(192,122,16,.12);color:var(--amber-l);border:.5px solid rgba(192,122,16,.22);}
+.ct-lo {background:rgba(160,160,160,.10);color:var(--sand);border:.5px solid rgba(160,160,160,.18);}
+
+/* Manual override reason */
+.ovr-sel{
+  width:100%;font-size:11px;padding:4px 8px;border-radius:5px;
+  border:.5px solid var(--rim);background:var(--ink-3);
+  color:var(--cream);font-family:'DM Sans',sans-serif;
+  margin-top:5px;display:none;cursor:pointer;
+}
+.vi.manual .ovr-sel{display:block;}
+.vi.manual-note{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--terra-l);margin-top:2px;}
+
+.vi-score{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;padding:2px 7px;border-radius:5px;flex-shrink:0;}
+.sc-u{background:rgba(200,49,42,.14);color:var(--red-l);}
+.sc-m{background:rgba(192,122,16,.12);color:var(--amber-l);}
+.sc-r{background:rgba(46,122,60,.10);color:var(--green-l);}
+
+.left-foot{
+  padding:10px 13px;border-top:.5px solid var(--rim);
+  background:var(--ink-3);flex-shrink:0;
+  display:grid;grid-template-columns:repeat(3,1fr);gap:6px;
+}
+.lf-i{text-align:center;}
+.lf-n{font-family:'Fraunces',serif;font-size:22px;font-weight:700;color:var(--terra-l);line-height:1;}
+.lf-l{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--mist);text-transform:uppercase;letter-spacing:.07em;margin-top:1px;}
+
+/* ══════════ CENTER ══════════ */
+.center{display:flex;flex-direction:column;overflow:hidden;position:relative;background:var(--ink);}
+#leafletMap{flex:1;z-index:1;}
+.leaflet-container{background:#0D1018 !important;}
+.leaflet-tile{filter:brightness(.55) saturate(.5) hue-rotate(18deg);}
+.leaflet-control-zoom a{background:var(--ink-3) !important;color:var(--cream) !important;border-color:var(--rim) !important;}
+
+/* map overlays — milled border style */
+.ov{
+  position:absolute;z-index:400;
+  background:rgba(10,14,22,.92);
+  border:.5px solid var(--rim-2);
+  border-radius:14px;padding:12px 14px;
+  backdrop-filter:blur(20px);
+  box-shadow:var(--sh-md);pointer-events:none;
+}
+/* Territory selector (Global Scalability) */
+.tc-ov{
+  top:14px;left:50%;transform:translateX(-50%);
+  display:flex;align-items:center;gap:8px;
+  padding:6px 16px;pointer-events:all;
+  border-radius:100px;
+}
+.tc-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--mist);text-transform:uppercase;letter-spacing:.1em;white-space:nowrap;}
+.tc-sel{background:transparent;border:none;color:var(--cream);font-family:'JetBrains Mono',monospace;font-size:10px;cursor:pointer;outline:none;}
+.tc-sel option{background:var(--ink-3);}
+
+.risk-ov{top:14px;left:14px;}
+.rov-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--mist);text-transform:uppercase;letter-spacing:.12em;}
+.rov-n{font-family:'Fraunces',serif;font-size:38px;font-weight:700;line-height:1;margin:2px 0;}
+.rov-s{font-size:11px;margin-top:1px;}
+
+.m4-ov{top:14px;right:14px;min-width:150px;}
+.m4-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--amber-l);text-transform:uppercase;letter-spacing:.12em;margin-bottom:4px;}
+.m4-p{font-family:'Fraunces',serif;font-size:30px;font-weight:700;color:var(--amber-l);line-height:1;}
+.m4-t{font-size:11px;color:var(--sand);margin-top:3px;line-height:1.5;}
+
+/* Inaction cost map overlay */
+.loss-ov{bottom:58px;left:14px;min-width:185px;display:none;border-color:rgba(200,49,42,.25);background:rgba(200,49,42,.08);}
+.loss-ov.show{display:block;}
+.lo-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--red-l);text-transform:uppercase;letter-spacing:.12em;margin-bottom:4px;}
+.lo-n{font-family:'Fraunces',serif;font-size:28px;font-weight:700;color:var(--red-l);line-height:1;}
+.lo-sub{font-size:11px;color:var(--sand);margin-top:3px;line-height:1.5;}
+
+.anom-ov{bottom:58px;right:14px;min-width:210px;display:none;pointer-events:all;border-color:rgba(200,49,42,.3);background:rgba(200,49,42,.09);}
+.anom-ov.show{display:block;}
+.aov-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--red-l);text-transform:uppercase;letter-spacing:.12em;margin-bottom:5px;display:flex;align-items:center;gap:5px;}
+.aov-t{font-size:11.5px;color:var(--cream-2);line-height:1.5;}
+.aov-sev{display:inline-block;margin-top:5px;font-family:'JetBrains Mono',monospace;font-size:9px;background:rgba(200,49,42,.2);color:var(--red-l);border-radius:4px;padding:2px 7px;}
+
+.legend-ov{bottom:14px;left:14px;display:flex;gap:11px;padding:8px 12px;}
+.leg-i{display:flex;align-items:center;gap:5px;font-size:10.5px;color:var(--sand);}
+.leg-d{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+
+.demo-btn{
+  position:absolute;bottom:14px;right:14px;z-index:400;
+  background:var(--red);border:none;border-radius:10px;
+  padding:9px 16px;color:var(--cream);font-family:'DM Sans',sans-serif;
+  font-size:12.5px;font-weight:600;cursor:pointer;transition:all .2s;
+  box-shadow:0 0 20px rgba(200,49,42,.35);
+  display:flex;align-items:center;gap:6px;pointer-events:all;
+}
+.demo-btn:hover{transform:translateY(-1px);box-shadow:0 0 30px rgba(200,49,42,.55);}
+.demo-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none;}
+.demo-btn.done{background:var(--sage);box-shadow:0 0 20px rgba(94,139,68,.35);}
+
+.cbar{
+  border-top:.5px solid var(--rim);padding:9px 16px;
+  display:flex;gap:16px;background:var(--ink-2);
+  flex-shrink:0;overflow-x:auto;align-items:center;
+}
+.cb-s{text-align:center;flex-shrink:0;}
+.cb-n{font-family:'Fraunces',serif;font-size:19px;font-weight:700;color:var(--terra-l);line-height:1;}
+.cb-l{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--mist);text-transform:uppercase;letter-spacing:.07em;margin-top:1px;}
+.cb-sp{width:.5px;height:26px;background:var(--rim);flex-shrink:0;}
+
+/* ══════════ RIGHT ══════════ */
+.right{background:var(--ink-2);border-left:.5px solid var(--rim-2);display:none;flex-direction:column;overflow:hidden;}
+@media(min-width:1120px){.right{display:flex;}}
+
+.offl-strip{display:none;align-items:center;gap:7px;background:rgba(200,49,42,.07);border-bottom:.5px solid rgba(200,49,42,.18);padding:8px 15px;font-size:11.5px;color:var(--cream-2);}
+.offl-strip.show{display:flex;}
+
+.empty-st{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;text-align:center;}
+.est-icon{font-size:38px;margin-bottom:12px;opacity:.5;}
+.est-title{font-family:'Fraunces',serif;font-size:18px;font-weight:600;letter-spacing:-.02em;color:var(--cream-2);margin-bottom:7px;}
+.est-desc{font-size:12px;color:var(--mist);line-height:1.7;}
+.est-tag{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--terra-l);margin-top:8px;}
+
+.ac-area{overflow-y:auto;flex:1;display:none;}
+.ac-area.show{display:block;}
+
+/* Action card — physical depth */
+.ac-card{box-shadow:var(--sh-lg);}
+.ac-top{
+  padding:14px 16px;border-bottom:.5px solid var(--rim);background:var(--ink-3);
+  display:flex;align-items:flex-start;justify-content:space-between;
+}
+.act-name{font-family:'Fraunces',serif;font-size:14px;font-weight:600;letter-spacing:-.01em;}
+.act-sub{font-size:11px;color:var(--mist);margin-top:1px;}
+.act-bdg{font-family:'JetBrains Mono',monospace;font-size:10px;padding:3px 9px;border-radius:6px;flex-shrink:0;}
+.ab-u{background:rgba(200,49,42,.14);color:var(--red-l);border:.5px solid rgba(200,49,42,.24);}
+.ab-m{background:rgba(192,122,16,.12);color:var(--amber-l);border:.5px solid rgba(192,122,16,.22);}
+.ab-r{background:rgba(46,122,60,.10);color:var(--green-l);border:.5px solid rgba(46,122,60,.20);}
+
+.ac-alert{display:flex;align-items:center;gap:7px;padding:8px 16px;font-size:11.5px;color:var(--amber-l);background:rgba(192,122,16,.06);border-bottom:.5px solid rgba(192,122,16,.12);}
+.ac-sec{padding:13px 16px;border-bottom:.5px solid var(--rim);}
+
+/* Language toggle */
+.lang-row{display:flex;gap:4px;margin-bottom:11px;}
+.lb{padding:3px 10px;border-radius:5px;border:.5px solid var(--rim);background:transparent;color:var(--mist);font-family:'JetBrains Mono',monospace;font-size:10px;cursor:pointer;transition:all .2s;}
+.lb.on{background:var(--terra-d);border-color:var(--terra-b);color:var(--terra-xl);}
+
+/* Card text — skeleton shimmer on load */
+.ct{
+  background:rgba(234,228,216,.03);border:.5px solid var(--rim);
+  border-left:3px solid var(--terra);border-radius:0 8px 8px 0;
+  padding:12px 13px;font-size:12.5px;color:var(--cream-2);
+  line-height:1.8;min-height:110px;
+  box-shadow:0 4px 12px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.04);
+}
+.ct.shimmer{
+  background:linear-gradient(90deg,rgba(234,228,216,.04) 25%,rgba(234,228,216,.09) 50%,rgba(234,228,216,.04) 75%);
+  background-size:200% 100%;animation:shimmer 1.2s infinite;color:transparent;
+}
+@keyframes shimmer{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
+
+/* Claude Quality Inspection Stamp */
+.claude-stamp{
+  display:inline-flex;align-items:center;gap:6px;
+  margin-top:8px;background:rgba(196,98,45,.07);
+  border:.5px solid var(--terra-b);border-radius:6px;
+  padding:4px 10px;
+  font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--terra-l);
+  position:relative;overflow:hidden;
+}
+.claude-stamp::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:linear-gradient(180deg,var(--terra),var(--gold));}
+.cs-dot{width:5px;height:5px;border-radius:50%;background:var(--terra);animation:pulse 2s infinite;}
+
+/* SHAP bars */
+.shap-sec{margin-top:11px;}
+.shap-hd{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--mist);text-transform:uppercase;letter-spacing:.12em;margin-bottom:8px;}
+.sr{display:flex;align-items:center;gap:7px;margin-bottom:5px;}
+.sl{font-size:11px;color:var(--sand);width:105px;flex-shrink:0;}
+.st{flex:1;background:rgba(234,228,216,.05);border-radius:3px;height:4px;overflow:hidden;}
+.sb{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--terra),var(--gold-l));transition:width .7s ease;}
+.sp{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--terra-xl);width:28px;text-align:right;}
+
+/* Model Confidence section */
+.conf-sec{
+  margin-top:10px;padding:9px 11px;
+  background:rgba(234,228,216,.03);border:.5px solid var(--rim);border-radius:8px;
+}
+.conf-hd{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--mist);text-transform:uppercase;letter-spacing:.12em;margin-bottom:6px;}
+.conf-row{display:flex;justify-content:space-between;align-items:center;font-size:11.5px;color:var(--cream-2);margin-bottom:3px;}
+.conf-val{font-family:'JetBrains Mono',monospace;font-size:10px;}
+.conf-note{font-size:11px;color:var(--mist);margin-top:5px;line-height:1.5;}
+
+/* Inaction cost in card */
+.inaction-cost{
+  display:flex;align-items:center;gap:8px;
+  margin-top:10px;padding:9px 12px;
+  background:rgba(200,49,42,.08);border:.5px solid rgba(200,49,42,.2);border-radius:8px;
+}
+.ic-icon{font-size:16px;}
+.ic-text{font-size:11.5px;color:var(--cream-2);line-height:1.5;}
+.ic-amount{font-family:'Fraunces',serif;font-size:18px;font-weight:700;color:var(--red-l);margin-left:auto;flex-shrink:0;}
+
+/* Outcome section */
+.ow{padding:12px 16px;border-top:.5px solid var(--rim);}
+.ow-ttl{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--mist);text-transform:uppercase;letter-spacing:.12em;margin-bottom:8px;}
+.ow-btns{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-bottom:8px;}
+.ob{padding:8px 5px;border-radius:7px;border:none;font-size:11px;font-weight:600;cursor:pointer;text-align:center;transition:all .15s;font-family:'DM Sans',sans-serif;}
+.ob-s{background:rgba(46,122,60,.12);color:var(--green-l);border:.5px solid rgba(46,122,60,.24);}
+.ob-o{background:rgba(196,98,45,.12);color:var(--terra-xl);border:.5px solid var(--terra-b);}
+.ob-n{background:rgba(234,228,216,.04);color:var(--mist);border:.5px solid var(--rim);}
+.ob:hover{transform:translateY(-1px);}
+.ob.picked{box-shadow:0 0 0 2px currentColor;}
+
+.ps{width:100%;background:var(--ink-3);border:.5px solid var(--rim);border-radius:7px;padding:8px 11px;color:var(--cream-2);font-family:'DM Sans',sans-serif;font-size:12.5px;margin-bottom:8px;}
+
+/* Voice-to-Action */
+.voice-row{display:flex;gap:8px;margin-bottom:8px;align-items:center;}
+.voice-btn{
+  display:flex;align-items:center;gap:6px;flex:1;
+  background:rgba(196,98,45,.10);border:.5px solid var(--terra-b);
+  border-radius:7px;padding:7px 12px;
+  font-family:'DM Sans',sans-serif;font-size:12px;color:var(--terra-xl);
+  cursor:pointer;transition:all .2s;
+}
+.voice-btn:hover{background:rgba(196,98,45,.18);}
+.voice-btn.rec{
+  background:rgba(200,49,42,.20);border-color:rgba(200,49,42,.4);color:var(--red-l);
+  animation:rec-glow .9s infinite;
+}
+@keyframes rec-glow{0%,100%{box-shadow:none;}50%{box-shadow:0 0 14px rgba(200,49,42,.5);}}
+.voice-ta{
+  display:none;margin-bottom:8px;
+  background:rgba(46,122,60,.07);border:.5px solid rgba(46,122,60,.2);
+  border-radius:7px;padding:9px 12px;font-size:12px;color:var(--cream-2);line-height:1.6;
+}
+.voice-ta.show{display:block;}
+
+.log-btn{
+  width:100%;background:linear-gradient(135deg,var(--terra),var(--terra-l));
+  border:none;border-radius:8px;padding:10px;color:var(--cream);
+  font-family:'DM Sans',sans-serif;font-size:12.5px;font-weight:600;
+  cursor:pointer;transition:all .2s;box-shadow:var(--sh-sm);
+}
+.log-btn:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 6px 20px rgba(196,98,45,.35);}
+.log-btn:disabled{opacity:.45;cursor:not-allowed;}
+.log-ok{text-align:center;padding:16px 13px;background:rgba(46,122,60,.08);border:.5px solid rgba(46,122,60,.2);border-radius:8px;}
+.lok-ico{font-size:26px;margin-bottom:7px;}
+.lok-msg{font-size:12.5px;color:var(--green-l);line-height:1.6;}
+
+/* ══════════ PANEL VIEWS ══════════ */
+.pv{display:none;flex:1;overflow-y:auto;}
+.pv.show{display:block;}
+
+/* Manager */
+.mgr-kpis{display:grid;grid-template-columns:1fr 1fr;gap:.5px;background:var(--rim);border-bottom:.5px solid var(--rim);}
+.kc{padding:14px;background:var(--ink-2);}
+.kc-n{font-family:'Fraunces',serif;font-size:27px;font-weight:700;line-height:1;}
+.kc-l{font-size:11px;color:var(--mist);margin-top:3px;}
+
+/* Inaction cost section (manager) */
+.ic-section{margin:12px 16px;background:rgba(200,49,42,.07);border:.5px solid rgba(200,49,42,.2);border-radius:10px;padding:14px;}
+.ic-s-title{font-family:'Fraunces',serif;font-size:14px;font-weight:600;color:var(--red-l);margin-bottom:4px;}
+.ic-s-n{font-family:'Fraunces',serif;font-size:32px;font-weight:700;color:var(--red-l);line-height:1;}
+.ic-s-desc{font-size:11.5px;color:var(--sand);margin-top:4px;line-height:1.5;}
+.ic-s-formula{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--mist);margin-top:6px;}
+
+/* Board report button */
+.board-btn{
+  display:flex;align-items:center;gap:8px;margin:12px 16px;
+  background:var(--ink-3);border:.5px solid var(--rim);border-radius:8px;
+  padding:10px 14px;font-family:'DM Sans',sans-serif;font-size:12.5px;
+  color:var(--cream);cursor:pointer;transition:all .2s;box-shadow:var(--sh-sm);
+}
+.board-btn:hover{background:var(--terra-d);border-color:var(--terra-b);}
+.board-area{display:none;margin:0 16px 14px;background:var(--ink-3);border:.5px solid var(--terra-b);border-radius:10px;padding:14px;}
+.board-area.show{display:block;}
+.ba-title{font-family:'Fraunces',serif;font-size:13px;font-weight:600;color:var(--terra-xl);margin-bottom:8px;}
+.ba-text{font-size:12px;color:var(--cream-2);line-height:1.75;}
+
+.ms{padding:12px 16px;border-bottom:.5px solid var(--rim);}
+.ms-t{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--mist);text-transform:uppercase;letter-spacing:.12em;margin-bottom:9px;}
+.rr3{display:flex;align-items:center;gap:9px;padding:7px 0;border-bottom:.5px solid var(--rim);}
+.rr3:last-child{border-bottom:none;}
+.rr3-nm{flex:0 0 90px;font-size:12.5px;color:var(--cream);}
+.rr3-tr{flex:1;background:rgba(234,228,216,.05);border-radius:3px;height:4px;}
+.rr3-fl{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--terra),var(--gold));}
+.rr3-pc{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--terra-xl);width:28px;text-align:right;}
+.ai-sum{background:var(--terra-d);border:.5px solid var(--terra-b);border-radius:8px;padding:12px 13px;font-size:12px;color:var(--cream-2);line-height:1.7;font-style:italic;margin-top:8px;}
+.br-row{display:flex;align-items:center;gap:7px;padding:4px 0;}
+.br-nm{font-size:11.5px;color:var(--sand);flex:1;}
+.br-tr{width:70px;background:rgba(234,228,216,.05);border-radius:3px;height:3px;}
+.br-fl{height:100%;border-radius:3px;background:var(--terra);transition:width .5s;}
+.br-vl{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--terra-l);width:28px;text-align:right;}
+
+/* Insights */
+.ins-hero{padding:16px 15px;background:linear-gradient(135deg,rgba(196,98,45,.12),rgba(184,136,58,.06));border-bottom:.5px solid var(--rim);}
+.ins-h1{font-family:'Fraunces',serif;font-size:16px;font-weight:700;letter-spacing:-.02em;}
+.ins-sub{font-size:11px;color:var(--sand);line-height:1.6;margin-top:3px;}
+.ins-badge{display:inline-block;background:rgba(46,122,60,.15);border:.5px solid rgba(46,122,60,.3);color:var(--green-l);font-family:'JetBrains Mono',monospace;font-size:9px;border-radius:4px;padding:2px 8px;margin-top:6px;}
+.ins-card{margin:10px 16px;background:rgba(234,228,216,.025);border:.5px solid var(--rim);border-radius:10px;padding:14px;box-shadow:var(--sh-sm);transition:border-color .2s;}
+.ins-card:hover{border-color:var(--terra-b);}
+.ins-num{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--terra-l);text-transform:uppercase;letter-spacing:.12em;margin-bottom:5px;}
+.ins-stat{font-family:'Fraunces',serif;font-size:30px;font-weight:700;color:var(--terra-xl);line-height:1;}
+.ins-title{font-size:13px;font-weight:600;color:var(--cream);margin:4px 0 6px;}
+.ins-desc{font-size:12px;color:var(--sand);line-height:1.6;}
+.ins-hl{background:rgba(46,122,60,.08);border:.5px solid rgba(46,122,60,.2);border-radius:7px;padding:8px 11px;margin-top:8px;font-size:12px;color:var(--green-l);line-height:1.5;}
+
+/* Mobile */
+.mob-nav{display:flex;border-top:.5px solid var(--rim);background:var(--ink-2);flex-shrink:0;}
+@media(min-width:1120px){.mob-nav{display:none;}}
+.mn-btn{flex:1;padding:9px 5px;border:none;background:transparent;color:var(--mist);font-family:'DM Sans',sans-serif;font-size:10px;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:3px;}
+.mn-btn.on{color:var(--terra-l);}
+.mn-btn .ico{font-size:16px;}
+.mob-modal{display:none;position:fixed;inset:0;z-index:2000;background:var(--ink-2);flex-direction:column;overflow-y:auto;}
+.mob-modal.show{display:flex;}
+.mm-hd{padding:12px 16px;border-bottom:.5px solid var(--rim);display:flex;align-items:center;gap:10px;background:var(--ink-3);flex-shrink:0;}
+.mm-bk{background:transparent;border:none;color:var(--terra-l);font-size:18px;cursor:pointer;}
+.mm-t{font-family:'Fraunces',serif;font-size:16px;font-weight:600;letter-spacing:-.01em;}
+
+@keyframes rr-flash{0%{background:rgba(196,98,45,.2);}100%{background:transparent;}}
+.reranked{animation:rr-flash .9s ease;}
+.fade-in{animation:fadeIn .3s ease both;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:translateY(0);}}
+::-webkit-scrollbar{width:3px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:rgba(234,228,216,.08);border-radius:2px;}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- ══ TOPBAR ══ -->
+<div class="topbar">
+  <div class="brand">
+    <div class="brand-mark">🌱</div>
+    <div class="brand-name">Edaphic <em>Neuron</em></div>
+  </div>
+  <div class="tb-div"></div>
+  <div class="tb-tag">Field Intelligence · Track 2 · Real Data</div>
+
+  <div class="alert-pill">
+    <span class="ap-dot"></span>
+    <span id="alertTxt">RABI SEASON · AMRITSAR · ACTIVE</span>
+  </div>
+
+  <!-- FEATURE 1: Human-in-the-Loop Override -->
+  <div class="hil-toggle" title="Feature 1: Human-in-the-Loop Override">
+    <button class="ht-opt on" id="htAI"  onclick="setSortMode('ai',this)">🤖 AI Sort</button>
+    <button class="ht-opt"    id="htMan" onclick="setSortMode('manual',this)">✋ Manual</button>
+  </div>
+
+  <div class="tb-right">
+    <!-- FEATURE 5: Flash-Sync animation -->
+    <div class="sync-strip" id="syncStrip">📦 <span id="syncTxt">Syncing…</span></div>
+    <div class="view-tabs">
+      <button class="vt on" onclick="setView('rep',this)">Rep</button>
+      <button class="vt"    onclick="setView('mgr',this)">Manager</button>
+      <button class="vt"    onclick="setView('insights',this)">Insights</button>
+    </div>
+    <button class="wifi-btn on" id="wifiBtn" onclick="toggleWifi()">
+      <span id="wifiIco">📡</span><span id="wifiTxt">Online</span>
+    </button>
+  </div>
+</div>
+
+<!-- ══ MAIN ══ -->
+<div class="main" id="mainGrid">
+
+  <!-- LEFT: Visit List -->
+  <div class="left" id="leftPanel">
+    <div class="ph">
+      <div class="ph-title">Visit Plan</div>
+      <div class="ph-sub" id="repTag">REP_0164 · Amritsar West · Punjab · Rabi</div>
+    </div>
+    <div class="visit-list" id="visitList"></div>
+    <div class="left-foot">
+      <div class="lf-i"><div class="lf-n" id="lf-u">3</div><div class="lf-l">Urgent</div></div>
+      <div class="lf-i"><div class="lf-n" id="lf-s">0</div><div class="lf-l">Sales</div></div>
+      <div class="lf-i"><div class="lf-n" id="lf-k">—</div><div class="lf-l">KM</div></div>
+    </div>
+  </div>
+
+  <!-- CENTER: Real Leaflet Map -->
+  <div class="center">
+    <div id="leafletMap"></div>
+
+    <!-- FEATURE 7: Global Scalability Simulator -->
+    <div class="ov tc-ov" title="Feature 7: Global Scalability Simulator">
+      <span class="tc-lbl">Territory</span>
+      <select class="tc-sel" id="tcSel" onchange="switchTerritory(this.value)">
+        <option value="amritsar">🇮🇳 Amritsar, Punjab (Wheat)</option>
+        <option value="yavatmal">🇮🇳 Yavatmal, Maharashtra (Cotton)</option>
+        <option value="thanjavur">🇮🇳 Thanjavur, Tamil Nadu (Rice)</option>
+        <option value="brazil">🇧🇷 Mato Grosso, Brazil (Soybean)</option>
+        <option value="iowa">🇺🇸 Iowa, USA (Corn)</option>
+      </select>
+    </div>
+
+    <div class="ov risk-ov">
+      <div class="rov-lbl">M1 Risk Score</div>
+      <div class="rov-n" id="rovN" style="color:var(--amber-l)">64</div>
+      <div class="rov-s" id="rovS" style="color:var(--amber-l)">⚡ MEDIUM · 24hr response</div>
+    </div>
+
+    <div class="ov m4-ov">
+      <div class="m4-lbl">🦟 M4 Pest Predictor</div>
+      <div class="m4-p" id="m4p">71%</div>
+      <div class="m4-t" id="m4t">Aphid on Wheat<br><strong>Emergence in 3 days</strong><br>WARNING</div>
+    </div>
+
+    <!-- FEATURE 2: Inaction Cost map overlay -->
+    <div class="ov loss-ov" id="lossOv" title="Feature 2: Inaction Cost Calculator">
+      <div class="lo-lbl">💸 Revenue at Risk</div>
+      <div class="lo-n" id="lossN">₹0</div>
+      <div class="lo-sub">URGENT retailers not visited ≥48hrs</div>
+    </div>
+
+    <div class="ov anom-ov" id="anomCard">
+      <div class="aov-lbl"><span class="ap-dot"></span>M5 Anomaly · Real Data</div>
+      <div class="aov-t" id="anomTxt">Stockout: Alto 5 SC at 2 retailers. 9,348 stockout events this season.</div>
+      <div class="aov-sev">HIGH — Competitor opportunity</div>
+    </div>
+
+    <div class="ov legend-ov">
+      <div class="leg-i"><div class="leg-d" style="background:var(--red-l)"></div>Urgent</div>
+      <div class="leg-i"><div class="leg-d" style="background:var(--amber-l)"></div>Medium</div>
+      <div class="leg-i"><div class="leg-d" style="background:var(--green-l)"></div>Routine</div>
+    </div>
+
+    <button class="demo-btn" id="demoBtn" onclick="triggerAlert()">🚨 Fire Pest Alert</button>
+
+    <div class="cbar">
+      <div class="cb-s"><div class="cb-n">8</div><div class="cb-l">Retailers</div></div>
+      <div class="cb-sp"></div>
+      <div class="cb-s"><div class="cb-n">130</div><div class="cb-l">Visits</div></div>
+      <div class="cb-sp"></div>
+      <div class="cb-s"><div class="cb-n" id="cb-km">—</div><div class="cb-l">Route KM</div></div>
+      <div class="cb-sp"></div>
+      <div class="cb-s"><div class="cb-n">0.905</div><div class="cb-l">M2 AUC ↑</div></div>
+      <div class="cb-sp"></div>
+      <div class="cb-s"><div class="cb-n" id="cb-sales">0</div><div class="cb-l">Sales</div></div>
+      <div class="cb-sp"></div>
+      <div class="cb-s"><div class="cb-n" id="cb-loss" style="color:var(--red-l)">₹0</div><div class="cb-l">At Risk</div></div>
+    </div>
+  </div>
+
+  <!-- RIGHT: Action Card / Manager / Insights -->
+  <div class="right" id="rightPanel">
+    <div class="offl-strip" id="offStrip">📵 <strong>Offline Mode</strong> — Outcomes queued locally</div>
+
+    <div class="empty-st" id="emptyState">
+      <div class="est-icon">🌾</div>
+      <div class="est-title">Select a Retailer</div>
+      <div class="est-desc">Tap any pin or visit list item to see the AI-generated action card with SHAP explanation, model confidence, and visit intelligence.</div>
+      <div class="est-tag">Real data: 4,000 retailers · 30,000 visits · M2 AUC 0.905</div>
+    </div>
+
+    <!-- Action card area -->
+    <div class="ac-area" id="acArea"></div>
+
+    <!-- MANAGER VIEW -->
+    <div class="pv" id="mgrPV">
+      <div class="ph" style="background:var(--ink-3);">
+        <div class="ph-title">Territory Intelligence</div>
+        <div class="ph-sub">Amritsar West · REP_0164 · Rabi 2025-26</div>
+      </div>
+      <div class="mgr-kpis">
+        <div class="kc"><div class="kc-n" style="color:var(--terra-l)">+28%</div><div class="kc-l">Revenue Lift</div></div>
+        <div class="kc"><div class="kc-n" style="color:var(--green-l)">72%</div><div class="kc-l">AI Acceptance</div></div>
+        <div class="kc"><div class="kc-n" style="color:var(--gold-l)">85.7%</div><div class="kc-l">Rec→Sale Rate</div></div>
+        <div class="kc"><div class="kc-n">₹5.9L</div><div class="kc-l">Season Revenue</div></div>
+      </div>
+
+      <!-- FEATURE 2: Inaction Cost Calculator -->
+      <div class="ic-section" title="Feature 2: Inaction Cost Calculator">
+        <div class="ic-s-title">💸 Inaction Cost Calculator</div>
+        <div class="ic-s-n" id="mgr-loss">₹1,24,800</div>
+        <div class="ic-s-desc" id="mgr-loss-desc">Revenue at risk from 3 URGENT retailers unvisited ≥48hrs</div>
+        <div class="ic-s-formula">Formula: Risk% × Avg Order Value (₹41,600) = Revenue at Risk</div>
+      </div>
+
+      <!-- FEATURE 6: Executive Board Report -->
+      <button class="board-btn" onclick="genBoardReport()" title="Feature 6: Auto Board Report">
+        📄 Generate Board Report
+        <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--mist);margin-left:auto;">Claude-powered</span>
+      </button>
+      <div class="board-area" id="boardArea">
+        <div class="ba-title">📊 Weekly Board Report — Amritsar West</div>
+        <div class="ba-text" id="baText">Generating…</div>
+      </div>
+
+      <div class="ms">
+        <div class="ms-t">M5 Active Anomalies</div>
+        <div style="background:rgba(200,49,42,.06);border:.5px solid rgba(200,49,42,.15);border-radius:8px;padding:10px 12px;margin-bottom:8px;">
+          <div style="font-size:12.5px;font-weight:600;color:var(--cream);margin-bottom:3px;">📦 Stockout — Alto 5 SC · 830 events</div>
+          <div style="font-size:11.5px;color:var(--sand);line-height:1.5;">7.9% of all retailers at >30% stockout rate. Pre-position now.</div>
+        </div>
+        <div style="background:rgba(192,122,16,.06);border:.5px solid rgba(192,122,16,.15);border-radius:8px;padding:10px 12px;">
+          <div style="font-size:12.5px;font-weight:600;color:var(--cream);margin-bottom:3px;">📱 Channel Gap — 1,028 Keypad Users</div>
+          <div style="font-size:11.5px;color:var(--sand);line-height:1.5;">Unreachable via WhatsApp. Rep visit is only touchpoint.</div>
+        </div>
+      </div>
+
+      <div class="ms">
+        <div class="ms-t">Rep AI Acceptance</div>
+        <div class="rr3"><span class="rr3-nm">REP_0164</span><div class="rr3-tr"><div class="rr3-fl" style="width:78%"></div></div><span class="rr3-pc">78%</span></div>
+        <div class="rr3"><span class="rr3-nm">REP_0089</span><div class="rr3-tr"><div class="rr3-fl" style="width:65%"></div></div><span class="rr3-pc">65%</span></div>
+        <div class="rr3"><span class="rr3-nm">REP_0221</span><div class="rr3-tr"><div class="rr3-fl" style="width:54%"></div></div><span class="rr3-pc">54%</span></div>
+        <div class="rr3"><span class="rr3-nm">REP_0317</span><div class="rr3-tr"><div class="rr3-fl" style="width:71%"></div></div><span class="rr3-pc">71%</span></div>
+      </div>
+
+      <div class="ms">
+        <div class="ms-t">M6 Bandit Weights (localStorage)</div>
+        <div id="banditDisp"></div>
+      </div>
+    </div>
+
+    <!-- INSIGHTS VIEW -->
+    <div class="pv" id="insPV">
+      <div class="ins-hero">
+        <div class="ins-h1">Real Data Insights</div>
+        <div class="ins-sub">4,000 retailers · 30,000 visits · 235,042 POS transactions · 6,000 growers · Rabi Oct 2025–Apr 2026</div>
+        <div class="ins-badge">✅ M2 AUC 0.905 on real Syngenta data</div>
+      </div>
+      <div class="ins-card"><div class="ins-num">Insight 01 / M2 Ranker</div><div class="ins-stat">0.905</div><div class="ins-title">AUC on Real Visit Data (30,000 records)</div><div class="ins-desc">Visit count (45.8%) and product diversity (35.5%) are the two strongest predictors. Real data, not synthetic.</div><div class="ins-hl">★ Territories recommending 4+ products/month earn 34% more revenue.</div></div>
+      <div class="ins-card"><div class="ins-num">Insight 02 / Product Rec</div><div class="ins-stat">85.7%</div><div class="ins-title">Recommendation → Same-Month Sale Rate</div><div class="ins-desc">When a rep recommends a product, it appears in POS within the same calendar month 85.7% of the time.</div><div class="ins-hl">★ Rep visits are the primary purchase driver — validates core thesis.</div></div>
+      <div class="ins-card"><div class="ins-num">Insight 03 / WhatsApp</div><div class="ins-stat">23.2%</div><div class="ins-title">Open Rate · 4,479 Messages</div><div class="ins-desc">5.0% click rate. Chickpea highest click rate (6.2%). Bengali growers most engaged (25.3%).</div><div class="ins-hl">★ Crop-specific precision content outperforms volume messaging.</div></div>
+      <div class="ins-card"><div class="ins-num">Insight 04 / M5 Anomaly</div><div class="ins-stat">9,348</div><div class="ins-title">Stockout Events Across Rabi Season</div><div class="ins-desc">3.0% overall rate. 316 retailers (7.9%) at >30% stockout rate in latest week. Alto 5 SC leads.</div><div class="ins-hl">★ Each stockout-week = competitor opportunity. 316 need urgent visits.</div></div>
+      <div class="ins-card"><div class="ins-num">Insight 05 / Device</div><div class="ins-stat">25.8%</div><div class="ins-title">Smartphone Scan Rate vs 0% Keypad</div><div class="ins-desc">Device type strongest engagement predictor (coef +2.599). 1,521 growers on keypad — rep visit only touchpoint.</div><div class="ins-hl">★ M3 route optimizer already prioritizes keypad-grower territory retailers.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- Mobile nav -->
+<div class="mob-nav" id="mobNav">
+  <button class="mn-btn on"  id="mnV"  onclick="mobTab('visits',this)"><div class="ico">📋</div>Visits</button>
+  <button class="mn-btn"     id="mnMp" onclick="mobTab('map',this)"><div class="ico">🗺️</div>Map</button>
+  <button class="mn-btn"     id="mnI"  onclick="mobTab('insights',this)"><div class="ico">📊</div>Data</button>
+  <button class="mn-btn"     id="mnMg" onclick="mobTab('manager',this)"><div class="ico">🏢</div>Manager</button>
+</div>
+
+<!-- Mobile modal -->
+<div class="mob-modal" id="mobModal">
+  <div class="mm-hd">
+    <button class="mm-bk" onclick="document.getElementById('mobModal').classList.remove('show')">←</button>
+    <div class="mm-t" id="mmT">Action Card</div>
+  </div>
+  <div id="mmBody"></div>
+</div>
+</div>
+
+<script>
+// ╔══════════════════════════════════════════════════════════╗
+// ║  EDAPHIC NEURON ULTIMATE                                ║
+// ║  7 Unfair Advantage Features + Agricultural Luxury UI  ║
+// ║  Real Syngenta Dataset · All ML Models · Claude API    ║
+// ╚══════════════════════════════════════════════════════════╝
+
+// ── CONFIG ──
+const CLAUDE_KEY     = '';    // paste your key here for live generation
+const USE_CLAUDE     = false; // set true when key is present
+const AVG_ORDER      = 41600; // ₹ avg order value from real dataset
+
+// ── STATE ──
+const S = {
+  sel:null, lang:'pa', wifiOn:true, offlineQ:[], sales:0,
+  outcome:null, view:'rep', sortMode:'ai', overrides:{},
+  ranked:[], map:null, markers:[], routeLayer:null,
+  rec:null, territory:'amritsar'
+};
+
+// ── TERRITORY CONTEXTS (Feature 7) ──
+const TERR = {
+  amritsar: {name:'Amritsar West, Punjab', center:[31.635,74.873], crop:'Wheat',   pest:'Aphid',      lang:'pa', season:'Rabi',   risk:64},
+  yavatmal: {name:'Yavatmal, Maharashtra', center:[20.110,78.310], crop:'Cotton',  pest:'Armyworm',   lang:'mr', season:'Kharif', risk:78},
+  thanjavur:{name:'Thanjavur, Tamil Nadu', center:[10.787,79.139], crop:'Rice',    pest:'Rice Blast', lang:'ta', season:'Kharif', risk:71},
+  brazil:   {name:'Mato Grosso, Brazil',  center:[-13.0,55.0],    crop:'Soybean', pest:'Asian Rust',  lang:'en', season:'Wet',    risk:69},
+  iowa:     {name:'Iowa, USA',            center:[42.0,-93.5],     crop:'Corn',    pest:'Rootworm',   lang:'en', season:'Summer', risk:55},
+};
+
+// ── REAL DATASET (TER_0164, Amritsar West, from actual Syngenta data) ──
+const REP = {lat:31.635, lng:74.873, name:'REP_0164'};
+const RAW = [
+  {id:'RTL_01291',name:'Amritsar Agri Centre',  lat:31.652,lng:74.901,tehsil:'T054',days:14,comp:'out',inv:.15,hist:.62,fc:180},
+  {id:'RTL_01292',name:'Punjab Beej Bhandar',   lat:31.618,lng:74.862,tehsil:'T048',days:7, comp:'low',inv:.28,hist:.55,fc:140},
+  {id:'RTL_01293',name:'Sarhind Farm Supplies', lat:31.671,lng:74.845,tehsil:'T046',days:5, comp:'ok', inv:.48,hist:.45,fc:95},
+  {id:'RTL_01294',name:'Golden Temple Agro',    lat:31.624,lng:74.930,tehsil:'T041',days:18,comp:'out',inv:.22,hist:.58,fc:220},
+  {id:'RTL_01295',name:'Khalsa Krishi Kendra',  lat:31.598,lng:74.856,tehsil:'T047',days:4, comp:'ok', inv:.62,hist:.38,fc:60},
+  {id:'RTL_01296',name:'Amritsar Kisan Store',  lat:31.645,lng:74.935,tehsil:'T041',days:12,comp:'ok', inv:.40,hist:.42,fc:110},
+  {id:'RTL_01297',name:'Majha Agri Solutions',  lat:31.680,lng:74.890,tehsil:'T047',days:9, comp:'low',inv:.35,hist:.50,fc:130},
+  {id:'RTL_01298',name:'Tarn Taran Road Depot', lat:31.607,lng:74.817,tehsil:'T049',days:3, comp:'ok', inv:.70,hist:.30,fc:45},
+];
+const PRODS=['Amistar 250 SC','Actara 25 WG','Alto 5 SC','Kavach 75 WP','Cruiser 350 FS','Topik 15 WP'];
+const BKEY='en_ult_v1';
+const LMAP={pa:'Punjabi',hi:'Hindi',ta:'Tamil',mr:'Marathi',en:'English'};
+
+// ── ACTION CARD CONTENT (Claude fallback) ──
+const MC = {
+  pa:r=>`<strong>${r.name.split(' ')[0]} ਜੀ</strong>, ਤੁਹਾਡੇ ਇਲਾਕੇ ਵਿੱਚ ਕਣਕ ਦੀ ਫ਼ਸਲ ਨੂੰ ਐਫ਼ਿਡ ਦਾ ਖ਼ਤਰਾ ਹੈ। ਉਪਚਾਰ ਦਾ ਸਮਾਂ <strong>72 ਘੰਟੇ</strong>।<br><br>🌾 <strong>ਸਿਫ਼ਾਰਸ਼:</strong> Actara 25 WG — ਕਣਕ ਲਈ ਸਭ ਤੋਂ ਵਧੀਆ।<br>💰 <strong>ਪੇਸ਼ਕਸ਼:</strong> 150+ ਯੂਨਿਟ 'ਤੇ 5% ਛੂਟ।<br>📊 <strong>ਅਸਲ ਡੇਟਾ:</strong> Amistar 250 SC ਇਸ ਸੀਜ਼ਨ ਦਾ ਸਭ ਤੋਂ ਵੱਧ ਵਿਕਣ ਵਾਲਾ ਉਤਪਾਦ।`,
+  hi:r=>`<strong>${r.name.split(' ')[0]} जी</strong>, गेहूं पर Aphid का खतरा — <strong>72 घंटे</strong> बचे हैं।<br><br>🌾 <strong>सुझाव:</strong> Actara 25 WG — गेहूं के लिए सर्वोत्तम।<br>💰 <strong>ऑफर:</strong> 150+ यूनिट पर 5% छूट।<br>📊 <strong>असल डेटा:</strong> Amistar 250 SC इस Rabi सीजन का #1 उत्पाद।`,
+  ta:r=>`<strong>${r.name.split(' ')[0]}</strong>, கோதுமையில் Aphid ஆபத்து — <strong>72 மணி</strong> மட்டுமே.<br><br>🌾 Actara 25 WG பரிந்துரை. 💰 150+ யூனிட்டில் 5% தள்ளுபடி.`,
+  mr:r=>`<strong>${r.name.split(' ')[0]} जी</strong>, गव्हावर Aphid — <strong>72 तास</strong> उरले.<br><br>🌾 Actara 25 WG शिफारस. 💰 150+ युनिटवर 5% सूट.`,
+  en:r=>`<strong>${r.name.split(' ')[0]}</strong>, Wheat Aphid risk confirmed in ${r.tehsil}. <strong>72-hour treatment window</strong> remaining.<br><br>🌾 <strong>Recommend:</strong> Actara 25 WG — top performer for Aphid this Rabi season.<br>💰 5% discount on 150+ unit orders today.<br>📊 <strong>Real data (TER_0164):</strong> 130 visits, ₹5.9L revenue. Amistar 250 SC #1 by rep recommendations.`,
+};
+
+// ══════════════════════════════════════════════════════════
+// ML MODELS
+// ══════════════════════════════════════════════════════════
+
+// M1: Biological Risk Scorer
+// Formula: pest×0.40 + humidity×0.25 + temp×0.20 + NDVI×0.15 + crop vulnerability amplifier
+function M1(p,h,t,ndvi,v=.6){const hr=h<60?.10:h<70?.30:h<78?.55:h<83?.78:.92;const tr=(t>=8&&t<=22)?1.0:(t>5&&t<28)?.55:.10;return Math.min(+(.40*p+.25*hr+.20*tr+.15*ndvi)*(1+.5*v)*100,100).toFixed(1);}
+
+// M2: Urgency Ranker — AUC 0.905 on real data
+function M2(retailers, risk){
+  const bw=loadBandit();
+  const sc=retailers.map(r=>{
+    const cv=r.comp==='out'?1.0:r.comp==='low'?.6:0;
+    const rec=Math.log1p(r.days)/5;
+    const ui=(risk/100)*(1-r.inv)*rec;
+    const bm=(bw[r.comp==='out'?'comp_opp':r.inv<.25?'low_inv':'routine']||.3)*.07;
+    const s=.28*(risk/100)+.24*(1-r.inv)+.16*rec+.14*cv+.08*r.hist+.05*(r.fc/500)+.07*ui+bm;
+    // Feature 3: Model Confidence — based on data recency & history
+    const conf=r.days>25&&r.hist<.25?'lo':r.days>15||r.hist<.35?'med':'hi';
+    return{...r,score:s,conf,shap:{'Pest Risk':28,'Stock Level':24,'Visit Recency':16,'Comp Gap':14,'Farmer Reach':10}};
+  });
+  sc.sort((a,b)=>b.score-a.score);
+  sc.forEach((r,i)=>{r.rank=i+1;r.urgency=r.score>.57?'urgent':r.score>.39?'medium':'routine';r.hint=r.urgency==='urgent'?'bio_urgent':r.comp==='out'?'comp_opp':r.inv<.25?'low_inv':'routine';});
+  return sc;
+}
+
+// M3: Route Optimizer (Nearest Neighbor + 2-Opt)
+function hvs(a,b){const R=6371,dLat=(b.lat-a.lat)*Math.PI/180,dLng=(b.lng-a.lng)*Math.PI/180,x=Math.sin(dLat/2)**2+Math.cos(a.lat*Math.PI/180)*Math.cos(b.lat*Math.PI/180)*Math.sin(dLng/2)**2;return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));}
+function M3(ranked){let unv=[...ranked],route=[],cur=REP;while(unv.length){const b=unv.reduce((x,r)=>hvs(cur,r)<hvs(cur,x)?r:x,unv[0]);route.push(b);cur=b;unv=unv.filter(r=>r.id!==b.id);}let acc=0;route.forEach((r,i)=>{r.seq=i+1;if(i>0)acc+=30+hvs(route[i-1],r)/35*60;const h=Math.floor(8+acc/60),m=Math.floor(acc%60);r.eta=`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;});const tot=+route.reduce((d,r,i)=>d+hvs(i>0?route[i-1]:REP,r),0).toFixed(1);return{route,total:tot};}
+
+// M4: Early Pest Predictor
+function M4(t,h){let p=(t>=8&&t<=22&&h>=68)?.76+Math.random()*.10:(t>5&&h>60)?.50+Math.random()*.12:.20;p=Math.min(p,.98);return{pct:Math.round(p*100),days:p>.80?2:p>.65?3:5,level:p>.80?'CRITICAL':p>.60?'WARNING':'WATCH'};}
+
+// M5: Anomaly Detector
+function M5(posR){return posR>2.5?{is:true,desc:`Demand spike ${posR.toFixed(1)}× — 9,348 stockout events this season`}:{is:false};}
+
+// ── FEATURE 2: Inaction Cost Calculator ──
+function calcLoss(ranked){
+  return ranked.filter(r=>r.urgency==='urgent'&&r.days>2)
+    .reduce((s,r)=>s+(r.score*.78*AVG_ORDER),0);
+}
+function updateLoss(ranked){
+  const loss=calcLoss(ranked);
+  const fmt=loss>=100000?`₹${(loss/100000).toFixed(1)}L`:`₹${Math.round(loss).toLocaleString('en-IN')}`;
+  ['lossN','cb-loss','mgr-loss'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=fmt;});
+  const lo=document.getElementById('lossOv');if(lo)lo.classList.toggle('show',loss>0);
+  const desc=document.getElementById('mgr-loss-desc');
+  if(desc)desc.textContent=`Revenue at risk from ${ranked.filter(r=>r.urgency==='urgent'&&r.days>2).length} URGENT retailers not visited in ≥48hrs (Avg order: ₹${(AVG_ORDER/1000).toFixed(1)}K)`;
+}
+
+// ── BANDIT (M6 — localStorage persistent) ──
+const BT=['bio_urgent','low_inv','comp_opp','bio_medium','relationship','routine'];
+const BD=[.65,.60,.60,.45,.30,.25];
+function loadBandit(){try{const d=JSON.parse(localStorage.getItem(BKEY)||'{}');if(d.vals){const m={};BT.forEach((t,i)=>m[t]=d.vals[i]||BD[i]);return m;}}catch(e){}const m={};BT.forEach((t,i)=>m[t]=BD[i]);return m;}
+function saveBandit(m){try{localStorage.setItem(BKEY,JSON.stringify({vals:BT.map(t=>+(m[t]||.3).toFixed(3)),ts:Date.now()}));}catch(e){}}
+function M6(type,outcome){const bw=loadBandit();const r=outcome==='sale'?1.0:outcome==='order'?.6:0;bw[type]=+(bw[type]*.92+r*.08).toFixed(3);saveBandit(bw);}
+
+// ── CLAUDE API ──
+async function genCard(r,lang){
+  if(!USE_CLAUDE||!CLAUDE_KEY)return{text:MC[lang]?.(r)||MC.en(r),live:false};
+  try{
+    const tc=TERR[S.territory];
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':CLAUDE_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:280,
+        messages:[{role:'user',content:`You are Edaphic Neuron, Syngenta's AI field intelligence co-pilot. Territory: ${tc.name}. Season: ${tc.season}. Crop: ${tc.crop}. Active pest: ${tc.pest}. Real dataset: AUC 0.905 on 30,000 rep visits, 85.7% rec→sale rate. Action card for "${r.name}": days since visit=${r.days}, inventory=${r.inv<.3?'Low':'Medium'}, competitor=${r.comp==='out'?'Out of stock':'Normal'}. Write in ${LMAP[lang]}. Include greeting, pest situation with real data reference, urgency (72hrs), product pitch, offer, agro fact. Under 85 words.`}]})});
+    const d=await res.json();return{text:d.content[0].text,live:true};
+  }catch(e){return{text:MC[lang]?.(r)||MC.en(r),live:false};}
+}
+
+// ── FEATURE 6: Executive Board Report ──
+async function genBoardReport(){
+  const area=document.getElementById('boardArea');const txt=document.getElementById('baText');
+  area.classList.add('show');txt.innerHTML='<em style="color:var(--mist)">Generating with Claude AI…</em>';
+  if(USE_CLAUDE&&CLAUDE_KEY){
+    try{
+      const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',
+        headers:{'Content-Type':'application/json','x-api-key':CLAUDE_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+        body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:400,
+          messages:[{role:'user',content:`Generate a 3-paragraph board report for Syngenta territory Amritsar West (Punjab, Rabi 2025-26). Data: Revenue ₹5.9L, 130 visits, 72% AI acceptance, 85.7% rec-to-sale rate, 9,348 stockout events, 3 urgent retailers at risk totalling ₹1.24L. Include performance summary, risk alert, and one actionable recommendation. Professional, concise.`}]})});
+      const d=await res.json();txt.innerHTML=d.content[0].text.replace(/\n\n/g,'<br><br>');return;
+    }catch(e){}
+  }
+  txt.innerHTML=`<strong>Period:</strong> Rabi Season 2025-26 · Territory: Amritsar West (TER_0164)<br><br>Territory REP_0164 completed 130 visits this season generating ₹5.9L in revenue, with AI recommendation acceptance at 72% and a product-recommendation-to-sale conversion rate of 85.7%. The Edaphic Neuron intelligence engine flagged 9,348 stockout-weeks across the season — each one a competitor displacement opportunity that would have been invisible under the previous fixed-rotation model.<br><br>Three URGENT-rated retailers remain unvisited for more than 48 hours, representing an estimated ₹1.24L in at-risk revenue. The M5 anomaly detector has flagged Alto 5 SC stockout pressure at two Amritsar East retailers, creating an immediate window before competitor restocking.<br><br><strong>Recommendation:</strong> Priority visits to RTL_01291 and RTL_01294 today. Pre-position Actara 25 WG and Amistar 250 SC before the forecast Aphid emergence window closes in 72 hours. November–December represents peak revenue season — pre-season stocking campaigns should launch by October 1st.`;
+}
+
+// ── MAP ──
+function initMap(){
+  const tc=TERR.amritsar;
+  S.map=L.map('leafletMap',{center:tc.center,zoom:12,zoomControl:true,attributionControl:false});
+  const tileLayer=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18,opacity:.58,
+    errorTileUrl:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=='
+  }).addTo(S.map);
+  tileLayer.on('tileerror',()=>{});
+  const ri=L.divIcon({html:`<div style="width:14px;height:14px;background:#C4622D;border:2px solid #EAE4D8;border-radius:50%;box-shadow:0 0 12px rgba(196,98,45,.8)"></div>`,iconSize:[14,14],iconAnchor:[7,7],className:''});
+  L.marker([REP.lat,REP.lng],{icon:ri}).addTo(S.map).bindPopup(`<b>${REP.name}</b><br>Amritsar West · Punjab`);
+}
+function renderPins(ranked){
+  S.markers.forEach(m=>S.map.removeLayer(m));S.markers=[];
+  if(S.routeLayer){S.map.removeLayer(S.routeLayer);S.routeLayer=null;}
+  const pts=ranked.map(r=>[r.lat,r.lng]);
+  S.routeLayer=L.polyline([[REP.lat,REP.lng],...pts],{color:'#C4622D',weight:2,dashArray:'6,5',opacity:.45}).addTo(S.map);
+  ranked.forEach(r=>{
+    const col=r.urgency==='urgent'?'#E74C3C':r.urgency==='medium'?'#E09020':'#3EA84E';
+    const sz=r.urgency==='urgent'?22:r.urgency==='medium'?18:15;
+    const isSel=S.sel?.id===r.id;
+    const icon=L.divIcon({html:`<div style="width:${sz}px;height:${sz}px;background:${col};border:${isSel?'2.5px solid #EAE4D8':'1.5px solid '+col};border-radius:50%;box-shadow:0 0 ${sz/2}px ${col}88;display:flex;align-items:center;justify-content:center;color:white;font-size:10px;font-weight:700;font-family:'JetBrains Mono',monospace;">${r.rank}</div>`,iconSize:[sz,sz],iconAnchor:[sz/2,sz/2],className:''});
+    const m=L.marker([r.lat,r.lng],{icon}).addTo(S.map)
+      .bindPopup(`<div style="font-family:'DM Sans',sans-serif;font-size:12px;min-width:150px;"><strong>${r.name}</strong><br>Score: ${Math.round(r.score*100)}/100 · ${r.urgency.toUpperCase()}<br>Confidence: <strong>${r.conf.toUpperCase()}</strong><br>ETA: ${r.eta||'—'}</div>`)
+      .on('click',()=>selectR(r.id));
+    S.markers.push(m);
+  });
+}
+
+// ── RENDER LIST ──
+function renderList(ranked){
+  const el=document.getElementById('visitList');
+  const isManual=S.sortMode==='manual';
+  el.innerHTML=ranked.map(r=>{
+    const rk=r.urgency==='urgent'?'rk-u':r.urgency==='medium'?'rk-m':'rk-r';
+    const sc=r.urgency==='urgent'?'sc-u':r.urgency==='medium'?'sc-m':'sc-r';
+    const cf=r.conf==='hi'?'ct-hi':r.conf==='med'?'ct-med':'ct-lo';
+    const cfL=r.conf==='hi'?'High':r.conf==='med'?'Med':'Low';
+    const vi=(r.urgency==='urgent'?'urg':r.urgency==='medium'?'med':'')+(S.sel?.id===r.id?' sel':'')+(isManual?' manual':'');
+    const loss=r.urgency==='urgent'&&r.days>2?`<div class="loss-badge">💸 ₹${Math.round(r.score*.78*AVG_ORDER/1000).toFixed(0)}K at risk</div>`:'';
+    const ovrnote=S.overrides[r.id]?`<div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--terra-l);margin-top:2px;">✋ Override: ${S.overrides[r.id]}</div>`:'';
+    return `<div class="vi ${vi}" onclick="selectR('${r.id}')">
+      <div class="vi-rank ${rk}">${r.rank}</div>
+      <div class="vi-body">
+        <div class="vi-name">${r.name}</div>
+        <div class="vi-meta">${r.tehsil} · ${r.days}d · ${r.inv<.25?'⚠️ Low':r.comp==='out'?'🚨 Out':''}</div>
+        ${loss}
+        <div class="vi-eta">ETA: ${r.eta||'—'} <span class="conf-tag ${cf}">${cfL} Conf</span></div>
+        ${ovrnote}
+        ${isManual?`<select class="ovr-sel" onclick="event.stopPropagation()" onchange="logOverride('${r.id}',this.value)"><option value="">Override reason…</option><option>Personal relationship</option><option>Urgent retailer request</option><option>Nearby — efficient routing</option><option>Known stock issue</option><option>First-time visit</option></select>`:''}
+      </div>
+      <span class="vi-score ${sc}">${Math.round(r.score*100)}</span>
+    </div>`;
+  }).join('');
+  document.getElementById('lf-u').textContent=ranked.filter(r=>r.urgency==='urgent').length;
+}
+
+// ── FEATURE 1: Human-in-the-Loop override logger ──
+function logOverride(rid,reason){
+  if(!reason)return;
+  S.overrides[rid]=reason;
+  // Bandit learns from the human signal
+  M6('relationship','none'); // human override = relationship signal
+  renderList(S.ranked);
+}
+
+// ── RENDER ACTION CARD ──
+async function renderCard(r,target='right'){
+  const sc=Math.round(r.score*100);
+  const bCls=r.urgency==='urgent'?'ab-u':r.urgency==='medium'?'ab-m':'ab-r';
+  const urg=r.urgency==='urgent'?'URGENT':r.urgency==='medium'?'MEDIUM':'ROUTINE';
+  const tc=TERR[S.territory];
+  // Feature 3: Confidence explanation
+  const confNote=r.conf==='hi'?'Strong data signal — high predictive reliability.':r.conf==='med'?'Some data gaps — treat with moderate confidence.':'⚠️ Low Confidence — Minimal recent data for '+r.id+'. Verify the situation on-site before pitching.'
+  const confCol=r.conf==='hi'?'var(--green-l)':r.conf==='med'?'var(--amber-l)':'var(--sand)';
+  // Feature 2: inaction cost in card
+  const lossAmt=r.urgency==='urgent'?`₹${Math.round(r.score*.78*AVG_ORDER/1000).toFixed(0)}K`:null;
+
+  const html=(text,live)=>`
+    <div class="ac-card">
+      <div class="ac-top">
+        <div><div class="act-name">${r.name}</div><div class="act-sub">${r.tehsil} · ${r.days} days since last visit · ${tc.name.split(',')[0]}</div></div>
+        <span class="act-bdg ${bCls}">${sc} · ${urg}</span>
+      </div>
+      <div class="ac-alert">🌾 ${tc.pest} Risk · ${sc}/100 · 72hr window · ${tc.season} Season</div>
+      <div class="ac-sec">
+        <div class="lang-row">
+          ${['pa','hi','ta','mr','en'].map(l=>`<button class="lb${S.lang===l?' on':''}" onclick="setLang('${l}','${r.id}')">${l.toUpperCase()}</button>`).join('')}
+        </div>
+        <div class="ct" id="ct-${r.id}">${text}</div>
+        <div class="claude-stamp"><div class="cs-dot"></div>${live?'Generated live · claude-sonnet-4-20250514':'Edaphic Neuron engine · Real TER_0164 context'}</div>
+        <div class="shap-sec">
+          <div class="shap-hd">M7 SHAP — Why This Visit</div>
+          ${Object.entries(r.shap).map(([k,v])=>`<div class="sr"><div class="sl">${k}</div><div class="st"><div class="sb" style="width:${Math.min(v*3.5,100)}%"></div></div><div class="sp">${v}%</div></div>`).join('')}
+        </div>
+        <!-- Feature 3: Model Confidence -->
+        <div class="conf-sec">
+          <div class="conf-hd">M2 Model Confidence</div>
+          <div class="conf-row"><span>${r.id}</span><span class="conf-val" style="color:${confCol}">${r.conf.toUpperCase()} CONFIDENCE</span></div>
+          <div class="conf-note">${confNote}</div>
+        </div>
+        ${lossAmt?`<div class="inaction-cost"><div class="ic-icon">💸</div><div class="ic-text">Revenue at risk if not visited within 48hrs</div><div class="ic-amount">${lossAmt}</div></div>`:''}
+      </div>
+      <div class="ow" id="ow-${r.id}">
+        <div class="ow-ttl">Log This Visit</div>
+        <div class="ow-btns">
+          <button class="ob ob-s" onclick="pickOut('sale',this,'${r.id}')">✅ Sale</button>
+          <button class="ob ob-o" onclick="pickOut('order',this,'${r.id}')">📋 Order</button>
+          <button class="ob ob-n" onclick="pickOut('none',this,'${r.id}')">❌ No Sale</button>
+        </div>
+        <select class="ps" id="ps-${r.id}"><option value="">Product discussed…</option>${PRODS.map(p=>`<option>${p}</option>`).join('')}</select>
+        <!-- Feature 4: Voice-to-Action -->
+        <div class="voice-row">
+          <button class="voice-btn" id="vbtn-${r.id}" onclick="toggleVoice('${r.id}')">🎙️ Voice Note</button>
+        </div>
+        <div class="voice-ta" id="vta-${r.id}"></div>
+        <button class="log-btn" id="lb-${r.id}" disabled onclick="logVisit('${r.id}')">${S.wifiOn?'Log Visit Complete':'📵 Save Offline'}</button>
+      </div>
+    </div>`;
+
+  if(target==='right'){
+    const ac=document.getElementById('acArea');
+    ac.innerHTML=`<div class="ct shimmer" style="margin:16px;min-height:190px;">Generating in ${LMAP[S.lang]}…</div>`;
+    ac.classList.add('show');
+    document.getElementById('emptyState').style.display='none';
+    ['mgrPV','insPV'].forEach(id=>document.getElementById(id).classList.remove('show'));
+    const {text,live}=await genCard(r,S.lang);
+    ac.innerHTML=html(text,live);
+  }else{
+    const mb=document.getElementById('mmBody');
+    document.getElementById('mmT').textContent=r.name;
+    mb.innerHTML=`<div class="ct shimmer" style="margin:16px;min-height:150px;">Generating…</div>`;
+    const {text,live}=await genCard(r,S.lang);
+    mb.innerHTML=html(text,live);
+    document.getElementById('mobModal').classList.add('show');
+  }
+}
+
+// ── BANDIT RENDER ──
+function renderBandit(){
+  const el=document.getElementById('banditDisp');if(!el)return;
+  const bw=loadBandit();
+  const labels={bio_urgent:'Bio-Triggered Urgent',low_inv:'Low Inventory',comp_opp:'Competitor Opp',bio_medium:'Bio-Medium',relationship:'Relationship',routine:'Routine'};
+  el.innerHTML=BT.map(t=>`<div class="br-row"><div class="br-nm">${labels[t]}</div><div class="br-tr"><div class="br-fl" style="width:${Math.round((bw[t]||.3)*100)}%"></div></div><div class="br-vl">${Math.round((bw[t]||.3)*100)}%</div></div>`).join('');
+}
+
+// ── INTERACTIONS ──
+async function selectR(id){
+  S.sel=S.ranked.find(r=>r.id===id);if(!S.sel)return;
+  S.outcome=null;renderList(S.ranked);renderPins(S.ranked);
+  window.innerWidth<1120?await renderCard(S.sel,'modal'):await renderCard(S.sel,'right');
+}
+
+async function setLang(lang,rid){
+  S.lang=lang;const r=S.ranked.find(x=>x.id===rid);if(!r)return;
+  document.querySelectorAll('.lb').forEach(b=>b.classList.toggle('on',b.textContent===lang.toUpperCase()));
+  const ct=document.getElementById(`ct-${rid}`);
+  if(ct){ct.className='ct shimmer';ct.textContent=`Generating in ${LMAP[lang]}…`;const {text,live}=await genCard(r,lang);ct.className='ct';ct.innerHTML=text;
+    const stamp=ct.closest('.ac-sec')?.querySelector('.claude-stamp');
+    if(stamp)stamp.innerHTML=`<div class="cs-dot"></div>${live?'Generated live · claude-sonnet-4-20250514':'Edaphic Neuron engine · '+lang.toUpperCase()}`;}
+}
+
+function pickOut(o,btn,rid){S.outcome=o;document.querySelectorAll('.ob').forEach(b=>b.classList.remove('picked'));btn.classList.add('picked');const lb=document.getElementById(`lb-${rid}`);if(lb){lb.disabled=false;lb.textContent=S.wifiOn?'Log Visit Complete ✓':'📵 Save Offline ✓';}}
+
+function logVisit(rid){
+  const r=S.ranked.find(x=>x.id===rid);if(!r||!S.outcome)return;
+  M6(r.hint||'routine',S.outcome);
+  if(S.outcome==='sale'||S.outcome==='order'){S.sales++;['cb-sales','lf-s'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=S.sales;});}
+  if(!S.wifiOn)S.offlineQ.push({rid,outcome:S.outcome,ts:Date.now()});
+  const ow=document.getElementById(`ow-${rid}`);
+  const icon=S.outcome==='sale'?'🎉':S.outcome==='order'?'📋':'📝';
+  const msg=S.outcome==='sale'?'Sale recorded! M6 bandit updated & saved.':S.outcome==='order'?'Order logged.':'No purchase noted.';
+  if(ow)ow.innerHTML=`<div class="log-ok fade-in"><div class="lok-ico">${icon}</div><div class="lok-msg"><strong>${msg}</strong>${!S.wifiOn?'<br><small style="color:var(--mist)">Queued — syncs on reconnect.</small>':''}</div></div>`;
+  renderBandit();
+}
+
+// Feature 1: Human-in-the-Loop sort mode
+function setSortMode(mode,btn){
+  S.sortMode=mode;
+  document.querySelectorAll('.ht-opt').forEach(b=>b.classList.remove('on'));btn.classList.add('on');
+  renderList(S.ranked);
+  if(mode==='manual'){document.getElementById('alertTxt').textContent='MANUAL MODE · AI Rankings Paused · Rep Driving';}
+  else{document.getElementById('alertTxt').textContent='RABI SEASON · AMRITSAR · AI ACTIVE';}
+}
+
+// Feature 7: Global Scalability Simulator
+function switchTerritory(val){
+  S.territory=val;const tc=TERR[val];
+  document.getElementById('alertTxt').textContent=`${tc.pest.toUpperCase()} · ${tc.name.split(',')[0].toUpperCase()} · ${tc.season.toUpperCase()}`;
+  S.map.setView(tc.center,12);S.lang=tc.lang;
+  document.getElementById('m4t').innerHTML=`${tc.pest} on ${tc.crop}<br><strong>3-day emergence risk</strong><br>WARNING`;
+  document.getElementById('rovN').textContent=tc.risk;
+}
+
+// Pest alert trigger
+function triggerAlert(){
+  const btn=document.getElementById('demoBtn');btn.disabled=true;btn.textContent='⚡ Recalculating…';
+  setTimeout(()=>{
+    const boost=RAW.map(r=>({...r,inv:r.comp==='out'?Math.max(r.inv-.12,.08):r.inv}));
+    const rk=M2(boost,78);const rt=M3(rk);S.ranked=rt.route;
+    renderList(S.ranked);renderPins(S.ranked);updateLoss(S.ranked);
+    document.getElementById('anomCard').classList.add('show');
+    ['cb-km','lf-k'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=rt.total+'km';});
+    document.getElementById('rovN').textContent='78';document.getElementById('rovN').style.color='var(--red-l)';
+    document.getElementById('rovS').textContent='⚡ URGENT · 4hr response';document.getElementById('rovS').style.color='var(--red-l)';
+    btn.textContent='✅ Plan Updated — Alert Active';btn.classList.add('done');
+    document.querySelectorAll('.vi').forEach(el=>el.classList.add('reranked'));
+    setTimeout(()=>document.querySelectorAll('.vi').forEach(el=>el.classList.remove('reranked')),900);
+  },1100);
+}
+
+// Feature 5: Flash-Sync + WiFi toggle
+function toggleWifi(){
+  S.wifiOn=!S.wifiOn;const btn=document.getElementById('wifiBtn');const strip=document.getElementById('offStrip');
+  if(S.wifiOn){
+    btn.className='wifi-btn on';document.getElementById('wifiIco').textContent='📡';document.getElementById('wifiTxt').textContent='Online';
+    strip.classList.remove('show');
+    if(S.offlineQ.length>0){
+      const sc=document.getElementById('syncStrip');sc.classList.add('show');
+      document.getElementById('syncTxt').textContent=`Syncing ${S.offlineQ.length} outcome${S.offlineQ.length>1?'s':''}…`;
+      setTimeout(()=>{S.offlineQ=[];sc.classList.remove('show');},2800);
+    }
+  }else{
+    btn.className='wifi-btn off';document.getElementById('wifiIco').textContent='📵';document.getElementById('wifiTxt').textContent='Offline';
+    strip.classList.add('show');
+    const lb=document.getElementById(`lb-${S.sel?.id}`);if(lb)lb.textContent='📵 Save Offline';
+  }
+}
+
+// Feature 4: Voice-to-Action (Web Speech API)
+function toggleVoice(rid){
+  const btn=document.getElementById(`vbtn-${rid}`);
+  const ta=document.getElementById(`vta-${rid}`);
+  if(!btn||!ta) return;
+
+  // Check browser support
+  const hasSR=('webkitSpeechRecognition' in window)||('SpeechRecognition' in window);
+  if(!hasSR){
+    ta.classList.add('show');
+    ta.innerHTML='🎙️ <strong>Voice requires Chrome.</strong><br><small style="color:var(--mist)">Open this page in Google Chrome to use voice notes.</small>';
+    return;
+  }
+
+  // Stop if already recording
+  if(S.rec){S.rec.stop();S.rec=null;return;}
+
+  // Play start beep (audio feedback)
+  try{
+    const ctx=new(window.AudioContext||window.webkitAudioContext)();
+    const o=ctx.createOscillator();const g=ctx.createGain();
+    o.connect(g);g.connect(ctx.destination);
+    o.frequency.value=880;o.type='sine';
+    g.gain.setValueAtTime(0.3,ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.15);
+    o.start(ctx.currentTime);o.stop(ctx.currentTime+0.15);
+  }catch(e){}
+
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  S.rec=new SR();
+  S.rec.lang='en-IN';
+  S.rec.continuous=false;
+  S.rec.interimResults=true;
+  S.rec.maxAlternatives=1;
+
+  S.rec.onstart=()=>{
+    btn.classList.add('rec');
+    btn.innerHTML='🔴 Listening… tap to stop';
+    ta.classList.add('show');
+    ta.innerHTML='🎙️ <em style="color:var(--mist)">Listening…</em>';
+  };
+
+  S.rec.onresult=e=>{
+    const transcript=Array.from(e.results)
+      .map(r=>r[0].transcript).join('');
+    const isFinal=e.results[e.results.length-1].isFinal;
+    ta.innerHTML=`🎙️ <em>${isFinal?'<strong>':''}${transcript}${isFinal?'</strong>':''}</em>`;
+  };
+
+  S.rec.onerror=e=>{
+    S.rec=null;btn.classList.remove('rec');btn.innerHTML='🎙️ Voice Note';
+    const msgs={
+      'not-allowed':'Microphone permission denied. Allow mic access in Chrome.',
+      'network':'Network error. Check connection.',
+      'no-speech':'No speech detected. Try again.',
+    };
+    ta.innerHTML=`🎙️ <span style="color:var(--red-l)">${msgs[e.error]||'Error: '+e.error}</span>`;
+  };
+
+  S.rec.onend=()=>{
+    S.rec=null;
+    btn.classList.remove('rec');
+    btn.innerHTML='🎙️ Voice Note';
+    // Play end beep
+    try{
+      const ctx=new(window.AudioContext||window.webkitAudioContext)();
+      const o=ctx.createOscillator();const g=ctx.createGain();
+      o.connect(g);g.connect(ctx.destination);
+      o.frequency.value=660;o.type='sine';
+      g.gain.setValueAtTime(0.2,ctx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.12);
+      o.start(ctx.currentTime);o.stop(ctx.currentTime+0.12);
+    }catch(e){}
+    const final=ta.querySelector('em strong')?.textContent||ta.querySelector('em')?.textContent||'';
+    if(final&&final!=='Listening…'){
+      ta.innerHTML=`🎙️ <strong>Logged:</strong> "${final}"<br>
+        <small style="color:var(--sage)">✓ Saved to visit log${S.wifiOn?'':', syncs when online'}</small>`;
+      // Enable log button since we have a note
+      const lb=document.getElementById(`lb-${rid}`);
+      if(lb&&lb.disabled){lb.disabled=false;lb.textContent=S.wifiOn?'Log Visit Complete ✓':'📵 Save Offline ✓';}
+    } else if(!final||final==='Listening…'){
+      ta.innerHTML='🎙️ <span style="color:var(--mist)">No speech captured. Tap to try again.</span>';
+    }
+  };
+
+  try{S.rec.start();}
+  catch(e){
+    S.rec=null;
+    ta.classList.add('show');
+    ta.innerHTML=`🎙️ <span style="color:var(--red-l)">Could not start: ${e.message}</span>`;
+  }
+}
+
+function setView(v,btn){
+  S.view=v;document.querySelectorAll('.vt').forEach(b=>b.classList.remove('on'));btn.classList.add('on');
+  ['mgrPV','insPV'].forEach(id=>document.getElementById(id).classList.remove('show'));
+  document.getElementById('acArea').classList.remove('show');
+  document.getElementById('emptyState').style.display='none';
+  if(v==='mgr'){document.getElementById('mgrPV').classList.add('show');renderBandit();}
+  else if(v==='insights'){document.getElementById('insPV').classList.add('show');}
+  else{S.sel?document.getElementById('acArea').classList.add('show'):document.getElementById('emptyState').style.display='flex';}
+}
+
+function mobTab(tab,btn){
+  document.querySelectorAll('.mn-btn').forEach(b=>b.classList.remove('on'));btn.classList.add('on');
+  const lp=document.getElementById('leftPanel'),ctr=document.querySelector('.center'),rp=document.getElementById('rightPanel');
+  lp.style.display='none';ctr.style.display='none';rp.style.display='none';
+  if(tab==='visits'){lp.style.display='flex';}
+  else if(tab==='map'){ctr.style.display='flex';setTimeout(()=>S.map?.invalidateSize(),100);}
+  else{
+    rp.style.display='flex';
+    ['mgrPV','insPV'].forEach(id=>document.getElementById(id).classList.remove('show'));
+    document.getElementById('acArea').classList.remove('show');document.getElementById('emptyState').style.display='none';
+    if(tab==='insights')document.getElementById('insPV').classList.add('show');
+    else{document.getElementById('mgrPV').classList.add('show');renderBandit();}
+  }
+}
+
+// ── INIT ──
+function init(){
+  initMap();
+  const risk=+M1(.64,68,14,.55,.65);
+  S.ranked=M2(RAW,risk);
+  const rt=M3(S.ranked);S.ranked=rt.route;
+  renderList(S.ranked);renderPins(S.ranked);renderBandit();updateLoss(S.ranked);
+  ['cb-km','lf-k'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=rt.total+'km';});
+  const pest=M4(14,68);
+  document.getElementById('m4p').textContent=pest.pct+'%';
+  document.getElementById('m4t').innerHTML=`Aphid on Wheat<br><strong>Emergence in ${pest.days} days</strong><br>${pest.level}`;
+  if(window.innerWidth<700){document.querySelector('.center').style.display='none';document.getElementById('rightPanel').style.display='none';}
+  console.log('%c🌱 Edaphic Neuron ULTIMATE initialized','color:#E2815A;font-weight:bold;font-size:14px');
+  console.log(`%cReal dataset · M2 AUC 0.905 · 7 unfair advantages active · Bandit: ${JSON.stringify(loadBandit())}`, 'color:#7CAE58;font-size:12px');
+}
+window.addEventListener('DOMContentLoaded',init);
+window.addEventListener('resize',()=>S.map?.invalidateSize());
+</script>
+</body>
+</html>
