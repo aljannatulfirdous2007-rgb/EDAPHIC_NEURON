@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Edaphic Neuron — Syngenta AgriTech Hackathon 2026</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,600;1,700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300;1,9..40,400&family=JetBrains+Mono:wght@300;400;500;600&display=swap');
+:root {
+  --ink:#1A1F2C; --ink-2:#222838; --ink-3:#2C3345; --ink-4:#363D52;
+  --terra:#E2725B; --terra-d:#C4622D; --terra-xl:#F0947A;
+  --terra-dim:rgba(226,114,91,.10); --terra-rim:rgba(226,114,91,.22);
+  --linen:#F4F1EA; --linen-2:#EAE5DC; --linen-3:#D8D1C4; --linen-4:#C4BAA8;
+  --gold:#C8943A; --gold-l:#E0B04E; --sage:#5E8B44; --sage-l:#7CAE58;
+  --slate:#8A96A8; --rim:rgba(244,241,234,.08); --rim-2:rgba(244,241,234,.14); --rim-3:rgba(244,241,234,.22);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;background:#0E1118;overflow:hidden;}
+body{font-family:'DM Sans',sans-serif;-webkit-font-smoothing:antialiased;}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;opacity:.035;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 300 300' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
+.nav{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:1000;display:flex;align-items:center;gap:8px;background:rgba(26,31,44,.96);border:.5px solid var(--rim-3);border-radius:100px;padding:7px 20px;backdrop-filter:blur(20px);box-shadow:0 8px 32px rgba(0,0,0,.6);}
+.nb{width:30px;height:30px;border-radius:50%;border:none;background:transparent;color:var(--linen-4);font-size:13px;cursor:pointer;transition:color .2s;display:flex;align-items:center;justify-content:center;}
+.nb:hover{color:var(--terra);}
+.nc{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--slate);letter-spacing:.1em;padding:0 10px;border-left:.5px solid var(--rim);border-right:.5px solid var(--rim);}
+.dots{display:flex;gap:5px;}
+.dot{width:5px;height:5px;border-radius:50%;background:var(--ink-4);cursor:pointer;transition:all .2s;border:none;}
+.dot.on{background:var(--terra);transform:scale(1.3);}
+.deck{width:100vw;height:100vh;position:relative;}
+.slide{position:absolute;inset:0;background:var(--ink);display:none;overflow:hidden;}
+.slide.active{display:flex;flex-direction:column;animation:enter .38s ease both;}
+@keyframes enter{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+.safe{flex:1;display:flex;flex-direction:column;padding:48px 68px 76px;max-width:1180px;margin:0 auto;width:100%;}
+.ey{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--terra);text-transform:uppercase;letter-spacing:.2em;display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+.ey::before{content:'';width:24px;height:.5px;background:var(--terra);flex-shrink:0;}
+.dsp{font-family:'Cormorant Garamond',serif;font-weight:700;letter-spacing:-.04em;line-height:.94;color:var(--linen);}
+.dsp em{color:var(--terra);font-style:italic;}
+.rule{width:100%;height:.5px;background:linear-gradient(90deg,var(--terra),rgba(226,114,91,.1),transparent);margin:16px 0;}
+.card{background:rgba(244,241,234,.03);border:.5px solid var(--rim-2);padding:22px 24px;box-shadow:0 4px 20px rgba(0,0,0,.3),inset 0 .5px 0 rgba(244,241,234,.05);}
+.stamp{display:inline-flex;align-items:center;gap:8px;border:.5px solid var(--terra-rim);padding:5px 12px;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--terra);letter-spacing:.12em;text-transform:uppercase;position:relative;overflow:hidden;}
+.stamp::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:linear-gradient(180deg,var(--terra),var(--gold));}
+.sdot{width:5px;height:5px;border-radius:50%;background:var(--terra);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+.sbar{height:2px;width:100%;background:linear-gradient(90deg,var(--terra),rgba(226,114,91,.08),transparent);flex-shrink:0;}
+/* grid bg */
+.gbg{position:absolute;inset:0;background-image:linear-gradient(var(--rim) .5px,transparent .5px),linear-gradient(90deg,var(--rim) .5px,transparent .5px);background-size:72px 72px;opacity:.38;pointer-events:none;}
+/* radial */
+.rbg-l{position:absolute;inset:0;background:radial-gradient(ellipse 60% 70% at 80% 50%,rgba(226,114,91,.055) 0%,transparent 60%);pointer-events:none;}
+.rbg-r{position:absolute;inset:0;background:radial-gradient(ellipse 65% 60% at 30% 45%,rgba(226,114,91,.05) 0%,transparent 55%);pointer-events:none;}
+.wm{position:absolute;right:-30px;bottom:-50px;font-family:'Cormorant Garamond',serif;font-size:280px;font-weight:700;line-height:1;color:rgba(244,241,234,.018);letter-spacing:-.06em;pointer-events:none;user-select:none;}
+/* layouts */
+.cols2{display:grid;grid-template-columns:1fr 1fr;gap:48px;flex:1;}
+.cols2-r{display:grid;grid-template-columns:1.1fr .9fr;gap:48px;flex:1;}
+.cols2-l{display:grid;grid-template-columns:.9fr 1.1fr;gap:48px;flex:1;}
+/* slide items */
+.prob-item{display:flex;gap:14px;padding:11px 0;border-bottom:.5px solid var(--rim);}
+.prob-item:last-child{border-bottom:none;}
+.pi-ico{font-size:15px;flex-shrink:0;margin-top:2px;opacity:.65;}
+.pi-text{font-size:13px;color:var(--linen-3);line-height:1.6;}
+.pi-text strong{color:var(--linen);}
+.metric{padding:20px 22px;margin-bottom:2px;background:rgba(244,241,234,.03);border:.5px solid var(--rim-2);position:relative;overflow:hidden;}
+.metric::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:linear-gradient(180deg,var(--terra),transparent);}
+.metric-n{font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:700;line-height:1;letter-spacing:-.03em;}
+.metric-l{font-size:12px;color:var(--slate);margin-top:4px;line-height:1.4;}
+/* comp table */
+.thead{display:grid;grid-template-columns:150px 1fr 1fr;padding:8px 14px;margin-bottom:2px;background:rgba(226,114,91,.07);border:.5px solid var(--terra-rim);}
+.th{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--terra);text-transform:uppercase;letter-spacing:.1em;}
+.trow{display:grid;grid-template-columns:150px 1fr 1fr;padding:12px 14px;margin-bottom:1px;background:rgba(244,241,234,.02);border:.5px solid var(--rim);}
+.trow:hover{background:rgba(244,241,234,.04);}
+.tplat{font-family:'Cormorant Garamond',serif;font-size:14px;font-weight:600;color:var(--linen);}
+.tplat-s{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--ink-4);margin-top:2px;}
+.tgap{font-size:12px;color:var(--linen-4);line-height:1.5;padding-right:14px;}
+.tedge{font-size:12px;color:var(--sage-l);line-height:1.5;padding-left:14px;border-left:.5px solid var(--rim);}
+.conclusion{margin-top:14px;padding:14px 18px;background:rgba(226,114,91,.06);border:.5px solid var(--terra-rim);font-family:'Cormorant Garamond',serif;font-size:15px;font-style:italic;color:var(--linen-2);line-height:1.65;}
+/* pipeline */
+.pipe{display:flex;margin-bottom:20px;background:rgba(244,241,234,.03);border:.5px solid var(--rim-2);}
+.pl{flex:1;padding:14px 12px;border-right:.5px solid var(--rim);position:relative;}
+.pl:last-child{border-right:none;}
+.pl-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--terra);text-transform:uppercase;letter-spacing:.1em;margin-bottom:9px;}
+.pi{display:flex;gap:7px;padding:3px 0;border-bottom:.5px solid var(--rim);font-size:11px;color:var(--linen-3);align-items:flex-start;line-height:1.4;}
+.pi:last-child{border-bottom:none;}
+.pid{width:4px;height:4px;border-radius:50%;background:var(--terra);flex-shrink:0;margin-top:5px;}
+.parrow{position:absolute;right:-11px;top:50%;transform:translateY(-50%);width:20px;height:20px;background:var(--ink-3);border:.5px solid var(--rim-2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;z-index:1;color:var(--terra);}
+.fgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.feat{padding:12px 14px;background:rgba(244,241,234,.025);border:.5px solid var(--rim);}
+.feat-t{font-size:12px;font-weight:600;color:var(--linen);margin-bottom:4px;}
+.feat-d{font-size:11px;color:var(--slate);line-height:1.5;}
+/* model rows */
+.mrow{display:flex;align-items:center;gap:13px;padding:9px 13px;border-bottom:.5px solid var(--rim);}
+.mrow:first-of-type{border-top:.5px solid var(--rim);}
+.mrow:hover{background:rgba(244,241,234,.025);}
+.mnum{width:32px;height:32px;border-radius:2px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;}
+.mny{background:rgba(226,114,91,.14);color:var(--terra);border:.5px solid var(--terra-rim);}
+.mnh{background:rgba(139,92,246,.12);color:#C4B5FD;border:.5px solid rgba(139,92,246,.22);}
+.mname{font-size:13px;font-weight:600;color:var(--linen);flex:1;}
+.malgo{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--slate);margin-top:2px;}
+.mscore{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;flex-shrink:0;}
+/* insights */
+.ins{display:flex;align-items:center;gap:16px;padding:12px 16px;border:.5px solid var(--rim);background:rgba(244,241,234,.02);margin-bottom:2px;}
+.ins:hover{background:rgba(244,241,234,.04);}
+.ins-n{font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:700;color:var(--terra);line-height:1;letter-spacing:-.03em;width:95px;flex-shrink:0;}
+.ins-t{font-size:13px;font-weight:600;color:var(--linen);margin-bottom:2px;}
+.ins-d{font-size:11.5px;color:var(--slate);line-height:1.5;}
+/* 7 advantages */
+.a7grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;flex:1;}
+.acard{padding:14px;background:rgba(244,241,234,.025);border:.5px solid var(--rim);display:flex;flex-direction:column;box-shadow:0 2px 10px rgba(0,0,0,.2),inset 0 .5px 0 rgba(244,241,234,.04);}
+.acard:hover{border-color:var(--terra-rim);background:rgba(244,241,234,.04);}
+.acard.wide{grid-column:span 2;}
+.aico{font-size:18px;margin-bottom:9px;}
+.anum{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--terra);text-transform:uppercase;letter-spacing:.1em;margin-bottom:5px;}
+.atitle{font-size:12.5px;font-weight:600;color:var(--linen);margin-bottom:5px;}
+.adesc{font-size:11px;color:var(--slate);line-height:1.55;margin-top:auto;}
+/* demo */
+.dflow{display:flex;flex-direction:column;}
+.dstep{display:flex;gap:12px;padding:9px 0;border-bottom:.5px solid var(--rim);}
+.dstep:last-child{border-bottom:none;}
+.dn{width:22px;height:22px;border-radius:50%;flex-shrink:0;background:rgba(226,114,91,.14);color:var(--terra);font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;display:flex;align-items:center;justify-content:center;border:.5px solid var(--terra-rim);}
+.dt{font-size:12px;color:var(--linen-3);line-height:1.5;}
+.dt strong{color:var(--linen);}
+/* action card */
+.acp{width:100%;max-width:330px;background:var(--ink-2);border:.5px solid var(--rim-2);overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.6),inset 0 .5px 0 rgba(244,241,234,.06);}
+.acph{padding:13px 15px;background:var(--ink-3);border-bottom:.5px solid var(--rim);display:flex;justify-content:space-between;align-items:flex-start;}
+.acpn{font-family:'Cormorant Garamond',serif;font-size:14px;font-weight:600;color:var(--linen);}
+.acps{font-size:11px;color:var(--slate);margin-top:2px;}
+.acpb-badge{font-family:'JetBrains Mono',monospace;font-size:9px;padding:3px 8px;background:rgba(200,49,42,.14);color:#E74C3C;border:.5px solid rgba(200,49,42,.25);}
+.acpalert{padding:7px 15px;font-size:11px;color:var(--gold-l);background:rgba(200,148,58,.06);border-bottom:.5px solid rgba(200,148,58,.12);font-family:'JetBrains Mono',monospace;letter-spacing:.04em;}
+.acpbody{padding:13px 15px;}
+.lang-row{display:flex;gap:4px;margin-bottom:10px;}
+.lbtn{padding:3px 9px;font-family:'JetBrains Mono',monospace;font-size:9px;background:rgba(244,241,234,.04);border:.5px solid var(--rim-2);color:var(--slate);}
+.lbtn.on{background:var(--terra-dim);border-color:var(--terra-rim);color:var(--terra-xl);}
+.acptxt{font-size:11.5px;color:var(--linen-3);line-height:1.75;padding:9px 11px;background:rgba(244,241,234,.03);border:.5px solid var(--rim);border-left:2px solid var(--terra);margin-bottom:11px;}
+.shaptitle{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--slate);text-transform:uppercase;letter-spacing:.1em;margin-bottom:7px;}
+.srow{display:flex;align-items:center;gap:7px;margin-bottom:5px;}
+.sl{font-size:10px;color:var(--linen-4);width:75px;flex-shrink:0;}
+.strk{flex:1;background:rgba(244,241,234,.06);height:3px;}
+.sfill{height:100%;background:linear-gradient(90deg,var(--terra),var(--gold));}
+.spct{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--terra);width:26px;text-align:right;}
+.acpstamp{margin-top:10px;display:flex;align-items:center;gap:6px;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--terra);padding:4px 10px;border:.5px solid var(--terra-rim);background:var(--terra-dim);position:relative;}
+.acpstamp::before{content:'';position:absolute;top:0;left:0;width:2px;height:100%;background:linear-gradient(180deg,var(--terra),var(--gold));}
+/* kpis */
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-bottom:20px;background:var(--rim);}
+.kpi{background:var(--ink-2);padding:22px 20px;}
+.kpin{font-family:'Cormorant Garamond',serif;font-size:48px;font-weight:700;line-height:1;letter-spacing:-.03em;}
+.kpil{font-size:12px;color:var(--slate);margin-top:7px;line-height:1.4;}
+.kpis2{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--ink-4);margin-top:5px;text-transform:uppercase;letter-spacing:.08em;}
+.road{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:var(--rim);}
+.phase{background:var(--ink-2);padding:16px 18px;}
+.phlbl{font-family:'JetBrains Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:.12em;margin-bottom:5px;}
+.phtitle{font-size:13px;font-weight:600;color:var(--linen);margin-bottom:5px;}
+.phdesc{font-size:11px;color:var(--slate);line-height:1.5;margin-bottom:7px;}
+.phgate{font-family:'JetBrains Mono',monospace;font-size:9px;padding:3px 8px;display:inline-block;text-transform:uppercase;letter-spacing:.04em;}
+/* team */
+.tgrid{display:grid;grid-template-columns:1fr 1fr;gap:2px;background:var(--rim);}
+.tmem{background:var(--ink-2);padding:16px 15px;}
+.tname{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:600;color:var(--linen);margin-bottom:2px;}
+.tname.lead{color:var(--terra-xl);font-size:18px;}
+.trole{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--slate);text-transform:uppercase;letter-spacing:.06em;}
+.tmodels{font-size:11px;color:var(--linen-4);margin-top:3px;}
+.tnums{display:grid;grid-template-columns:1fr 1fr;gap:2px;background:var(--rim);margin-bottom:14px;}
+.tnum{background:var(--ink-2);padding:16px;text-align:center;}
+.tnumn{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:700;color:var(--terra);line-height:1;}
+.tnuml{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--slate);margin-top:3px;text-transform:uppercase;letter-spacing:.07em;}
+.def{font-family:'Cormorant Garamond',serif;font-size:15px;font-style:italic;color:var(--linen-4);line-height:1.7;border-left:2px solid var(--terra);padding-left:16px;margin-bottom:20px;}
+@media print{body{background:white;}*{-webkit-print-color-adjust:exact;print-color-adjust:exact;}.nav{display:none;}.slide{display:flex !important;position:relative;page-break-after:always;}}
+</style>
+</head>
+<body>
+<div class="deck">
+
+<!-- S1 TITLE -->
+<div class="slide active" id="s1">
+<div class="gbg"></div><div class="rbg-l"></div><div class="wm">01</div>
+<div class="safe" style="position:relative;z-index:1;flex:1;">
+  <div class="ey">Syngenta AgriTech Hackathon 2026 · Track 2 · IIT Madras BS</div>
+  <div class="cols2" style="gap:0;flex:1;">
+    <div style="display:flex;flex-direction:column;justify-content:center;padding-right:56px;border-right:.5px solid var(--rim-2);">
+      <h1 class="dsp" style="font-size:clamp(60px,7vw,96px);margin-bottom:20px;">Edaphic<br><em>Neuron</em></h1>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:17px;font-style:italic;color:var(--linen-4);line-height:1.65;border-left:2px solid var(--terra);padding-left:16px;margin-bottom:28px;">"The rep still knocks on every door.<br>They just never walk in blind again."</div>
+      <div style="margin-top:auto;">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--slate);text-transform:uppercase;letter-spacing:.15em;margin-bottom:11px;">Team · IIT Madras BS</div>
+        <div style="display:flex;flex-direction:column;">
+          <div style="display:flex;align-items:baseline;gap:10px;padding:8px 0;border-bottom:.5px solid var(--rim);">
+            <div style="font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:600;color:var(--terra-xl);">A. Al Jannatul Firdous</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--slate);">ML Lead · M1 M2 M3 M7</div>
+          </div>
+          <div style="display:flex;align-items:baseline;gap:10px;padding:8px 0;border-bottom:.5px solid var(--rim);">
+            <div style="font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:600;color:var(--linen);">Kavya T</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--slate);">ML · M4 M5 M6 · Data</div>
+          </div>
+          <div style="display:flex;align-items:baseline;gap:10px;padding:8px 0;border-bottom:.5px solid var(--rim);">
+            <div style="font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:600;color:var(--linen);">Oviya Sankarasivakumar</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--slate);">Backend · Claude API</div>
+          </div>
+          <div style="display:flex;align-items:baseline;gap:10px;padding:8px 0;">
+            <div style="font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:600;color:var(--linen);">Rakshna R</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--slate);">Frontend · Leaflet · PWA</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;justify-content:center;padding-left:56px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px;background:var(--rim);margin-bottom:20px;">
+        <div style="background:var(--ink-2);padding:20px;"><div style="font-family:'Cormorant Garamond',serif;font-size:42px;font-weight:700;color:var(--terra);line-height:1;letter-spacing:-.03em;">7</div><div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--slate);text-transform:uppercase;letter-spacing:.1em;margin-top:4px;">ML Models</div></div>
+        <div style="background:var(--ink-2);padding:20px;"><div style="font-family:'Cormorant Garamond',serif;font-size:42px;font-weight:700;color:var(--terra);line-height:1;letter-spacing:-.03em;">0.905</div><div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--slate);text-transform:uppercase;letter-spacing:.1em;margin-top:4px;">M2 AUC Real Data</div></div>
+        <div style="background:var(--ink-2);padding:20px;"><div style="font-family:'Cormorant Garamond',serif;font-size:42px;font-weight:700;color:var(--terra);line-height:1;letter-spacing:-.03em;">85.7<span style="font-size:20px">%</span></div><div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--slate);text-transform:uppercase;letter-spacing:.1em;margin-top:4px;">Rec → Sale Rate</div></div>
+        <div style="background:var(--ink-2);padding:20px;"><div style="font-family:'Cormorant Garamond',serif;font-size:42px;font-weight:700;color:var(--terra);line-height:1;letter-spacing:-.03em;">9,348</div><div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--slate);text-transform:uppercase;letter-spacing:.1em;margin-top:4px;">Stockouts Found</div></div>
+      </div>
+      <div class="stamp"><span class="sdot"></span>Syngenta Intelligence Engine · Track 2</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ink-4);letter-spacing:.08em;text-transform:uppercase;margin-top:16px;">TER_0164 · Amritsar West · Punjab<br>4,000 Retailers · 30,000 Visits · 235,042 POS</div>
+    </div>
+  </div>
+</div><div class="sbar"></div></div>
+
+<!-- S2 PROBLEM -->
+<div class="slide" id="s2">
+<div class="safe">
+  <div class="ey">The Problem · Section 01</div>
+  <div class="cols2-r" style="gap:52px;">
+    <div style="display:flex;flex-direction:column;justify-content:center;">
+      <h2 class="dsp" style="font-size:clamp(40px,5vw,62px);margin-bottom:20px;">The Rep Walks<br>In <em>Blind.</em><br>Every Day.</h2>
+      <p style="font-size:14px;color:var(--linen-4);line-height:1.75;max-width:400px;margin-bottom:20px;">Syngenta's reps follow fixed rotations while NPSS pest data, satellite stress signals, and 9,348 stockout windows expire silently — all invisible to the rep at the door.</p>
+      <div class="rule"></div>
+      <div class="prob-item"><div class="pi-ico">✗</div><div class="pi-text"><strong>Fixed rotation</strong> — same retailers, same order, regardless of last night's pest data</div></div>
+      <div class="prob-item"><div class="pi-ico">✗</div><div class="pi-text"><strong>No pest connection</strong> — NPSS has the data, nobody connects it to a rep's phone</div></div>
+      <div class="prob-item"><div class="pi-ico">✗</div><div class="pi-text"><strong>72hr windows close</strong> before the rep knows they exist. Failed harvest follows.</div></div>
+      <div class="prob-item"><div class="pi-ico">✗</div><div class="pi-text"><strong>9,348 stockout events</strong> this Rabi season — each a competitor window that expired silently</div></div>
+    </div>
+    <div style="display:flex;flex-direction:column;justify-content:center;gap:3px;">
+      <div class="metric"><div class="metric-n" style="color:var(--terra)">72<span style="font-size:22px">hr</span></div><div class="metric-l">Treatment window before pest damage becomes irreversible. The farmer loses the harvest after this.</div></div>
+      <div class="metric"><div class="metric-n" style="color:var(--gold)">150<span style="font-size:22px">M</span></div><div class="metric-l">Indian farming households. Smallholders under 5 acres. A missed intervention = a lost season.</div></div>
+      <div class="metric"><div class="metric-n" style="color:var(--linen-4)">0</div><div class="metric-l">Platforms that connect biological signals directly to a rep's daily visit plan. Before Edaphic Neuron.</div></div>
+    </div>
+  </div>
+</div><div class="sbar"></div></div>
+
+<!-- S3 COMPETITIVE -->
+<div class="slide" id="s3">
+<div class="safe">
+  <div class="ey">Competitive Landscape · Section 02</div>
+  <h2 class="dsp" style="font-size:clamp(36px,4.5vw,54px);margin-bottom:6px;">Five Platforms.<br><em>Five Proven Gaps.</em></h2>
+  <p style="font-size:13px;color:var(--slate);font-style:italic;font-family:'Cormorant Garamond',serif;margin-bottom:18px;">Each proved a component works. None connected the biological signal to rep-level action.</p>
+  <div class="thead"><div class="th">Platform</div><div class="th">Critical Gap</div><div class="th">Our Edge</div></div>
+  <div class="trow"><div><div class="tplat">Cropin</div><div class="tplat-s">1B+ acres computed</div></div><div class="tgap">Stops at manager dashboard — never reaches the rep's phone</div><div class="tedge">We push intelligence to rep level with daily Marathi action cards</div></div>
+  <div class="trow"><div><div class="tplat">BeatRoute</div><div class="tplat-s">Field force CRM</div></div><div class="tgap">Zero agricultural domain — blind to pest biology entirely</div><div class="tedge">We add the biological urgency layer BeatRoute entirely lacks</div></div>
+  <div class="trow"><div><div class="tplat">DeHaat</div><div class="tplat-s">1.4M farmers</div></div><div class="tgap">Fixed rotations — commission-driven reps ignore agri signals</div><div class="tedge">We replace target-driven routing with biological urgency routing</div></div>
+  <div class="trow"><div><div class="tplat">Farmonaut</div><div class="tplat-s">Satellite platform</div></div><div class="tgap">Passive — detects crop stress but never triggers rep action</div><div class="tedge">We convert satellite observations into rep visit decisions</div></div>
+  <div class="trow" style="border-bottom:none;"><div><div class="tplat">Bharat-VISTAAR</div><div class="tplat-s">Budget 2026-27</div></div><div class="tgap">Cannot serve private commercial Syngenta operations</div><div class="tedge">We build the commercial layer on top of public data infrastructure</div></div>
+  <div class="conclusion">"Cropin has the agri-intelligence but not the rep tool. BeatRoute has the rep tool but not the agri-intelligence. Nobody has fused them. Edaphic Neuron is that fusion."</div>
+</div><div class="sbar"></div></div>
+
+<!-- S4 PIPELINE -->
+<div class="slide" id="s4">
+<div class="safe">
+  <div class="ey">Solution Architecture · Section 03</div>
+  <h2 class="dsp" style="font-size:clamp(36px,4.5vw,50px);margin-bottom:18px;">The Intelligence <em>Pipeline</em></h2>
+  <div class="pipe">
+    <div class="pl"><div class="pl-lbl">Signal Layer</div><div class="pi"><div class="pid"></div>NPSS Pest Alerts</div><div class="pi"><div class="pid"></div>IMD Weather API</div><div class="pi"><div class="pid"></div>Farmonaut NDVI</div><div class="pi"><div class="pid"></div>AgriStack Farmers</div><div class="pi"><div class="pid"></div>Retailer POS Data</div><div class="parrow">→</div></div>
+    <div class="pl"><div class="pl-lbl">Intelligence Engine</div><div class="pi"><div class="pid"></div>M1: Risk Scorer</div><div class="pi"><div class="pid"></div>M2: Urgency Ranker</div><div class="pi"><div class="pid"></div>M3: Route Optimizer</div><div class="pi"><div class="pid"></div>M4: Pest Predictor</div><div class="pi"><div class="pid"></div>M5 · M6 · M7</div><div class="parrow">→</div></div>
+    <div class="pl"><div class="pl-lbl">Action Layer</div><div class="pi"><div class="pid"></div>Ranked Visit List</div><div class="pi"><div class="pid"></div>Marathi Action Card</div><div class="pi"><div class="pid"></div>SHAP Explanation</div><div class="pi"><div class="pid"></div>Offline PWA</div><div class="pi"><div class="pid"></div>Manager Dashboard</div></div>
+  </div>
+  <div class="fgrid">
+    <div class="feat"><div class="feat-t">📍 Dynamic Prioritization</div><div class="feat-d">Biological urgency drives visits, not fixed rotation</div></div>
+    <div class="feat"><div class="feat-t">🎯 Next Best Action</div><div class="feat-d">Claude generates Marathi/Hindi card grounded in real data</div></div>
+    <div class="feat"><div class="feat-t">🚨 Anomaly Detection</div><div class="feat-d">M5 flags stockouts, demand spikes, NDVI crashes</div></div>
+    <div class="feat"><div class="feat-t">🧠 Outcome Learning</div><div class="feat-d">M6 Bandit updates after every visit. Week 8 &gt; Week 1</div></div>
+    <div class="feat"><div class="feat-t">📵 Offline-First PWA</div><div class="feat-d">Works in zero-connectivity villages. Flash-sync on return</div></div>
+    <div class="feat"><div class="feat-t">📊 SHAP Explainability</div><div class="feat-d">Reps who understand follow through at 72% acceptance</div></div>
+  </div>
+</div><div class="sbar"></div></div>
+
+<!-- S5 ML MODELS -->
+<div class="slide" id="s5">
+<div class="safe">
+  <div class="ey">ML Architecture · Section 04</div>
+  <div class="cols2-r" style="gap:40px;">
+    <div style="display:flex;flex-direction:column;">
+      <h2 class="dsp" style="font-size:clamp(32px,3.5vw,46px);margin-bottom:16px;">Not the most complex.<br><em>The right tool.</em></h2>
+      <div class="rule"></div>
+      <div class="mrow"><div class="mnum mny">M1</div><div style="flex:1;"><div class="mname">Biological Risk Scorer</div><div class="malgo">Weighted fusion · pest×0.40 + humidity×0.25 + temp×0.20 + NDVI×0.15</div></div><div class="mscore" style="color:var(--slate)">—</div></div>
+      <div class="mrow"><div class="mnum mny">M2</div><div style="flex:1;"><div class="mname">Retailer Urgency Ranker</div><div class="malgo">Random Forest · 30,000 real Syngenta visits · AUC 0.905</div></div><div class="mscore" style="color:var(--gold)">0.905</div></div>
+      <div class="mrow"><div class="mnum mny">M3</div><div style="flex:1;"><div class="mname">Route Optimizer</div><div class="malgo">Nearest Neighbor + 2-Opt · urgency-weighted distance</div></div><div class="mscore" style="color:var(--slate)">—</div></div>
+      <div class="mrow"><div class="mnum mnh">M4</div><div style="flex:1;"><div class="mname">Early Pest Predictor</div><div class="malgo">Random Forest · 3-5 days before NPSS bulletin</div></div><div class="mscore" style="color:var(--gold)">0.773</div></div>
+      <div class="mrow"><div class="mnum mnh">M5</div><div style="flex:1;"><div class="mname">Anomaly Detector</div><div class="malgo">Isolation Forest · contamination=0.08 · 6 signals</div></div><div class="mscore" style="color:var(--slate)">—</div></div>
+      <div class="mrow"><div class="mnum mnh">M6</div><div style="flex:1;"><div class="mname">Contextual Bandit</div><div class="malgo">Epsilon-Greedy · learns from every visit outcome</div></div><div class="mscore" style="color:var(--sage-l)">Live</div></div>
+      <div class="mrow"><div class="mnum mny">M7</div><div style="flex:1;"><div class="mname">SHAP Explainer</div><div class="malgo">TreeExplainer → % attribution → Punjabi/Marathi</div></div><div class="mscore" style="color:var(--slate)">—</div></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px;justify-content:center;">
+      <div style="padding:20px;background:rgba(226,114,91,.07);border:.5px solid var(--terra-rim);">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--terra);text-transform:uppercase;letter-spacing:.12em;margin-bottom:7px;">M2 AUC — Real Syngenta Data</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:50px;font-weight:700;color:var(--terra);line-height:1;letter-spacing:-.03em;">0.905</div>
+        <div style="font-size:12px;color:var(--linen-4);margin-top:6px;line-height:1.55;">Trained on 30,000 actual rep visits. Visit count (45.8%) + product diversity (35.5%) = strongest predictors.</div>
+      </div>
+      <div style="padding:16px;background:rgba(244,241,234,.03);border:.5px solid var(--rim);">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--slate);text-transform:uppercase;letter-spacing:.12em;margin-bottom:9px;">Model Ownership</div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:7px;"><div style="width:7px;height:7px;border-radius:50%;background:var(--terra);flex-shrink:0;"></div><div style="font-size:12.5px;color:var(--linen-2);">A. Al Jannatul Firdous</div><div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--slate);margin-left:auto;">M1·M2·M3·M7</div></div>
+        <div style="display:flex;align-items:center;gap:8px;"><div style="width:7px;height:7px;border-radius:50%;background:#C4B5FD;flex-shrink:0;"></div><div style="font-size:12.5px;color:var(--linen-2);">Kavya T</div><div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--slate);margin-left:auto;">M4·M5·M6</div></div>
+      </div>
+      <div style="padding:14px;background:rgba(244,241,234,.025);border:.5px solid var(--rim);">
+        <div style="font-size:11.5px;color:var(--linen-4);line-height:1.65;font-style:italic;font-family:'Cormorant Garamond',serif;">Each algorithm chosen for a specific reason, not the most impressive-sounding one. Bandit for sparse data. Isolation Forest for unlabelled anomalies. 2-Opt for real-time routing.</div>
+      </div>
+    </div>
+  </div>
+</div><div class="sbar"></div></div>
+
+<!-- S6 REAL DATA -->
+<div class="slide" id="s6">
+<div class="safe">
+  <div class="ey">Real Data Results · Section 05</div>
+  <div class="cols2-l" style="gap:48px;">
+    <div style="display:flex;flex-direction:column;justify-content:center;">
+      <h2 class="dsp" style="font-size:clamp(38px,5vw,58px);margin-bottom:18px;">The numbers<br>are <em>real.</em></h2>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--slate);line-height:1.75;padding:13px 15px;background:rgba(244,241,234,.03);border:.5px solid var(--rim);margin-bottom:18px;">Dataset: 4,000 retailers · 30,000 visits<br>235,042 POS transactions · 6,000 growers<br>Rabi Season Oct 2025 – Apr 2026<br>Territory TER_0164 · Amritsar West · Punjab</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:16px;font-style:italic;color:var(--linen-3);line-height:1.7;border-left:2px solid var(--terra);padding-left:15px;">"When a rep recommends a product, it appears in the retailer's POS data within the same calendar month 85.7% of the time. Rep visits are the primary purchase driver. That is the core thesis Edaphic Neuron is built on."</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:2px;justify-content:center;">
+      <div class="ins"><div class="ins-n" style="color:var(--terra)">0.905</div><div><div class="ins-t">M2 AUC on 30,000 Real Visits</div><div class="ins-d">Visit count (45.8%) + product diversity (35.5%). 4+ products/month = 34% more revenue.</div></div></div>
+      <div class="ins"><div class="ins-n" style="color:var(--gold)">85.7%</div><div><div class="ins-t">Recommendation → Same-Month Sale Rate</div><div class="ins-d">Validates core thesis. Axial 50 EC leads at 88.6%.</div></div></div>
+      <div class="ins"><div class="ins-n" style="color:var(--linen-3)">9,348</div><div><div class="ins-t">Stockout Events — Rabi Season</div><div class="ins-d">316 retailers (7.9%) at >30% stockout rate. Each = competitor opportunity.</div></div></div>
+      <div class="ins"><div class="ins-n" style="color:var(--sage-l)">23.2%</div><div><div class="ins-t">WhatsApp Open Rate · 4,479 Messages</div><div class="ins-d">5% CTR. Chickpea: 6.2%. Precision content &gt; volume messaging.</div></div></div>
+      <div class="ins" style="border-bottom:none;"><div class="ins-n" style="color:var(--terra-xl)">25.8%</div><div><div class="ins-t">Smartphone Grower Scan Rate vs 0% Keypad</div><div class="ins-d">1,521 growers unreachable digitally. M3 already prioritizes their retailers.</div></div></div>
+    </div>
+  </div>
+</div><div class="sbar"></div></div>
+
+<!-- S7 UNFAIR ADVANTAGES -->
+<div class="slide" id="s7">
+<div class="safe">
+  <div class="ey">Differentiators · Section 06</div>
+  <h2 class="dsp" style="font-size:clamp(32px,4vw,50px);margin-bottom:16px;">Built for the real<br>world, not the <em>lab.</em></h2>
+  <div class="a7grid">
+    <div class="acard"><div class="aico">🤖</div><div class="anum">01 · Trust</div><div class="atitle">Human-in-the-Loop Override</div><div class="adesc">AI Sort / Manual Sort. Override reason fed to M6 Bandit. AI learns from human intuition when data is incomplete.</div></div>
+    <div class="acard"><div class="aico">💸</div><div class="anum">02 · Business Value</div><div class="atitle">Inaction Cost Calculator</div><div class="adesc">Risk% × ₹41,600 = ₹ at stake. Turns "recommendation" into financial necessity visible to managers.</div></div>
+    <div class="acard"><div class="aico">🎯</div><div class="anum">03 · Technical</div><div class="atitle">Model Confidence Tags</div><div class="adesc">Hi/Med/Low per retailer. AI admits: "Confidence Low: Minimal recent data for RTL_01295."</div></div>
+    <div class="acard"><div class="aico">🎙️</div><div class="anum">04 · Field UX</div><div class="atitle">Voice-to-Action</div><div class="adesc">Web Speech API. Rep speaks with one hand. Audio beep confirms recording. Claude parses to Next Task.</div></div>
+    <div class="acard"><div class="aico">⚡</div><div class="anum">05 · Offline</div><div class="atitle">Flash-Sync Animation</div><div class="adesc">Packet stream animation when offline data syncs. Offline capability made visible, not just stated.</div></div>
+    <div class="acard"><div class="aico">📄</div><div class="anum">06 · Strategic</div><div class="atitle">Board Report Generator</div><div class="adesc">Claude generates CEO-level 3-paragraph territory summary on demand. Tool for the boardroom.</div></div>
+    <div class="acard wide"><div class="aico">🌍</div><div class="anum">07 · Scalability</div><div class="atitle">Global Scalability Simulator — Switch Territory</div><div class="adesc">Punjab (Wheat) → Maharashtra (Cotton) → Thanjavur (Rice) → Brazil (Soybean) → Iowa (Corn). The architecture is modular. This is not a Punjab app. It is a global agricultural operating system.</div></div>
+  </div>
+</div><div class="sbar"></div></div>
+
+<!-- S8 DEMO -->
+<div class="slide" id="s8">
+<div class="safe">
+  <div class="ey">Live Demo · Section 07</div>
+  <div class="cols2-r" style="gap:52px;">
+    <div style="display:flex;flex-direction:column;justify-content:center;">
+      <h2 class="dsp" style="font-size:clamp(36px,5vw,56px);margin-bottom:16px;">The Chaos<br><em>Test.</em></h2>
+      <div class="rule"></div>
+      <div class="dflow">
+        <div class="dstep"><div class="dn">1</div><div class="dt"><strong>Map loads</strong> — staggered Amritsar visit list animates in with real RTL IDs</div></div>
+        <div class="dstep"><div class="dn">2</div><div class="dt"><strong>Tap Amritsar Agri Centre</strong> — skeleton shimmer → Punjabi action card</div></div>
+        <div class="dstep"><div class="dn">3</div><div class="dt"><strong>Point SHAP + Low Confidence tag</strong> → "AI knows when it doesn't know"</div></div>
+        <div class="dstep"><div class="dn">4</div><div class="dt"><strong>🚨 Fire Pest Alert</strong> — list reranks · ₹1.24L at-risk badge appears</div></div>
+        <div class="dstep"><div class="dn">5</div><div class="dt"><strong>WiFi OFF</strong> → still works → log outcome → <strong>WiFi ON</strong> → packet flash sync</div></div>
+        <div class="dstep"><div class="dn">6</div><div class="dt"><strong>Voice Note</strong> → speak → transcript → "Claude parsing to Next Task"</div></div>
+        <div class="dstep"><div class="dn">7</div><div class="dt"><strong>Territory → Brazil Soybean</strong> → "Not a Punjab app. A global OS."</div></div>
+        <div class="dstep"><div class="dn">8</div><div class="dt"><strong>Manager → Generate Board Report</strong> → "For the managers in this room."</div></div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:center;">
+      <div class="acp">
+        <div class="acph"><div><div class="acpn">Amritsar Agri Centre</div><div class="acps">T054 · 14 days since last visit</div></div><div class="acpb-badge">78 · URGENT</div></div>
+        <div class="acpalert">🌾 APHID · WHEAT · 72HR WINDOW · RABI</div>
+        <div class="acpbody">
+          <div class="lang-row"><div class="lbtn on">PA</div><div class="lbtn">HI</div><div class="lbtn">TA</div><div class="lbtn">MR</div><div class="lbtn">EN</div></div>
+          <div class="acptxt">ਅਮਰਜੀਤ ਜੀ, ਤੁਹਾਡੇ ਇਲਾਕੇ ਵਿੱਚ ਕਣਕ ਦੀ ਫ਼ਸਲ ਨੂੰ ਐਫ਼ਿਡ ਦਾ ਖ਼ਤਰਾ ਹੈ। <strong>72 ਘੰਟੇ</strong> ਬਾਕੀ। Actara 25 WG — 150+ ਯੂਨਿਟ 'ਤੇ 5% ਛੂਟ।</div>
+          <div class="shaptitle">M7 SHAP — Why This Visit</div>
+          <div class="srow"><div class="sl">Pest Risk</div><div class="strk"><div class="sfill" style="width:98%"></div></div><div class="spct">28%</div></div>
+          <div class="srow"><div class="sl">Stock Level</div><div class="strk"><div class="sfill" style="width:84%"></div></div><div class="spct">24%</div></div>
+          <div class="srow"><div class="sl">Visit Recency</div><div class="strk"><div class="sfill" style="width:56%"></div></div><div class="spct">16%</div></div>
+          <div class="srow"><div class="sl">Comp Gap</div><div class="strk"><div class="sfill" style="width:49%"></div></div><div class="spct">14%</div></div>
+          <div class="acpstamp"><span style="width:5px;height:5px;border-radius:50%;background:var(--terra);"></span>Edaphic Neuron · Real TER_0164</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div><div class="sbar"></div></div>
+
+<!-- S9 IMPACT -->
+<div class="slide" id="s9">
+<div class="safe">
+  <div class="ey">Expected Impact · Section 08</div>
+  <h2 class="dsp" style="font-size:clamp(32px,4vw,50px);margin-bottom:20px;">Syngenta's Three<br>Exact Metrics. <em>Met.</em></h2>
+  <div class="kpis">
+    <div class="kpi"><div class="kpin" style="color:var(--terra)">+28%</div><div class="kpil">Revenue per field day in bio-triggered visit weeks vs fixed-rotation baseline</div><div class="kpis2">Measured via POS data linked to territory</div></div>
+    <div class="kpi"><div class="kpin" style="color:var(--gold)">4<span style="font-size:26px">hr</span></div><div class="kpil">Alert-to-first-visit response time — NPSS bulletin to rep GPS check-in</div><div class="kpis2">Alert timestamp vs rep check-in log</div></div>
+    <div class="kpi"><div class="kpin" style="color:var(--sage-l)">72%</div><div class="kpil">AI recommendation acceptance rate — reps following AI-suggested visits</div><div class="kpis2">Action card shown vs outcome logged</div></div>
+  </div>
+  <div class="ey" style="margin-bottom:10px;">90-Day Pilot Roadmap</div>
+  <div class="road">
+    <div class="phase"><div class="phlbl" style="color:var(--terra)">Phase 01 · Days 1–30</div><div class="phtitle">Proof of Concept</div><div class="phdesc">Yavatmal · Cotton · 15 reps · 180 retailers · NPSS + IMD + NDVI pipeline live</div><div class="phgate" style="background:rgba(226,114,91,.12);color:var(--terra);">↳ Gate: First bio-triggered visit within 4hrs</div></div>
+    <div class="phase"><div class="phlbl" style="color:var(--gold)">Phase 02 · Days 31–60</div><div class="phtitle">Pilot</div><div class="phdesc">+Thanjavur · Cotton + Rice · 50 reps · Measure vs control group</div><div class="phgate" style="background:rgba(200,148,58,.10);color:var(--gold);">↳ Gate: >15% revenue lift</div></div>
+    <div class="phase"><div class="phlbl" style="color:var(--sage-l)">Phase 03 · Days 61–90</div><div class="phtitle">Scale</div><div class="phdesc">Maharashtra + Tamil Nadu · 500 reps · Full bandit active · SHAP tracking</div><div class="phgate" style="background:rgba(94,139,68,.10);color:var(--sage-l);">↳ Gate: >65% acceptance rate</div></div>
+  </div>
+</div><div class="sbar"></div></div>
+
+<!-- S10 CLOSE -->
+<div class="slide" id="s10">
+<div class="gbg"></div><div class="rbg-r"></div><div class="wm">10</div>
+<div class="safe" style="position:relative;z-index:1;">
+  <div class="ey">Thank You · IIT Madras BS · Syngenta AgriTech Hackathon 2026</div>
+  <div class="cols2" style="gap:0;flex:1;">
+    <div style="display:flex;flex-direction:column;justify-content:center;padding-right:52px;border-right:.5px solid var(--rim-2);">
+      <h2 class="dsp" style="font-size:clamp(48px,6.5vw,80px);margin-bottom:18px;">Edaphic<br><em>Neuron.</em></h2>
+      <div class="def">
+        <em>Edaphic</em> — relating to soil and ground-level biological conditions that shape ecosystems.<br><br>
+        <em>Neuron</em> — intelligence that connects signals to action.<br><br>
+        Edaphic Neuron reads what the earth is telling us.
+      </div>
+      <div class="tnums">
+        <div class="tnum"><div class="tnumn">0.905</div><div class="tnuml">M2 AUC Real Data</div></div>
+        <div class="tnum"><div class="tnumn">85.7%</div><div class="tnuml">Rec → Sale Rate</div></div>
+        <div class="tnum"><div class="tnumn">9,348</div><div class="tnuml">Stockouts Found</div></div>
+        <div class="tnum"><div class="tnumn">7</div><div class="tnuml">ML Models</div></div>
+      </div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--ink-4);text-transform:uppercase;letter-spacing:.15em;margin-top:auto;">TER_0164 · Amritsar West · Punjab · Rabi 2025-26</div>
+    </div>
+    <div style="display:flex;flex-direction:column;justify-content:center;padding-left:52px;gap:2px;">
+      <div class="tgrid">
+        <div class="tmem"><div class="tname lead">A. Al Jannatul Firdous</div><div class="trole">ML Lead</div><div class="tmodels">M1 · M2 · M3 · M7 — Risk Scorer · Urgency Ranker · Route Optimizer · SHAP</div></div>
+        <div class="tmem"><div class="tname">Kavya T</div><div class="trole">ML Partner</div><div class="tmodels">M4 · M5 · M6 — Pest Predictor · Anomaly Detector · Contextual Bandit</div></div>
+        <div class="tmem"><div class="tname">Oviya Sankarasivakumar</div><div class="trole">Backend</div><div class="tmodels">FastAPI · Claude API · Data Pipeline · Offline Sync</div></div>
+        <div class="tmem"><div class="tname">Rakshna R</div><div class="trole">Frontend</div><div class="tmodels">React · Leaflet · PWA · Agricultural Luxury UI</div></div>
+      </div>
+      <div style="margin-top:12px;">
+        <div class="stamp" style="width:100%;justify-content:center;"><span class="sdot"></span>Syngenta AgriTech Hackathon 2026 · Track 2 · IIT Madras BS Programme</div>
+      </div>
+    </div>
+  </div>
+</div><div class="sbar"></div></div>
+
+</div>
+<nav class="nav">
+  <button class="nb" onclick="go(-1)">←</button>
+  <div class="nc" id="counter">01 / 10</div>
+  <div class="dots" id="dots"></div>
+  <button class="nb" onclick="go(1)">→</button>
+</nav>
+<script>
+let cur=1;const N=10;
+const de=document.getElementById("dots");
+for(let i=1;i<=N;i++){const d=document.createElement("button");d.className="dot"+(i===1?" on":"");d.onclick=()=>show(i);de.appendChild(d);}
+function show(n){document.querySelectorAll(".slide").forEach(s=>s.classList.remove("active"));document.getElementById("s"+n).classList.add("active");document.querySelectorAll(".dot").forEach((d,i)=>d.classList.toggle("on",i===n-1));document.getElementById("counter").textContent=String(n).padStart(2,"0")+" / "+String(N).padStart(2,"0");cur=n;}
+function go(d){const n=cur+d;if(n>=1&&n<=N)show(n);}
+document.addEventListener("keydown",e=>{if(e.key==="ArrowRight"||e.key===" "||e.key==="PageDown"){e.preventDefault();go(1);}if(e.key==="ArrowLeft"||e.key==="PageUp"){e.preventDefault();go(-1);}if(e.key==="Home")show(1);if(e.key==="End")show(N);const n=parseInt(e.key);if(n>=1&&n<=N)show(n);});
+let tx=0;document.addEventListener("touchstart",e=>tx=e.touches[0].clientX,{passive:true});document.addEventListener("touchend",e=>{const dx=e.changedTouches[0].clientX-tx;if(Math.abs(dx)>50)go(dx<0?1:-1);},{passive:true});
+</script>
+</body>
+</html>
